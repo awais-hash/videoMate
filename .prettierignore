@@ -1,0 +1,17 @@
+# Ignore the build output directory
+dist/
+build/
+out/
+
+# Ignore all log files
+*.log
+
+# Ignore environment files
+.env
+
+# Ignore node_modules (already ignored by default, but explicit is fine)
+node_modules/
+
+# Ignore specific files
+package-lock.json
+pnpm-lock.yaml
