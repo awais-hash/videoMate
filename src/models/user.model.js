@@ -1,6 +1,7 @@
 import mongoose,{Schema} from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+
 const userSchema = new Schema({
 
     userName:{
@@ -30,7 +31,7 @@ const userSchema = new Schema({
     },
      coverImage:{
         type:String, 
-        required:true,
+        required:false,
     },
      password:{
         type:String, 
@@ -51,14 +52,16 @@ const userSchema = new Schema({
 });
 
 
-userSchema.pre('save',async function(next){
+// userSchema.pre('save', async function(next){
 
-    if (!this.isModified('password')) {
-        return next();
-    }
-    this.password = await bcrypt.hash(this.password,10);
-    next();
-})
+//     if (!this.isModified('password')) {
+//         return next();
+//     }
+//     this.password = await bcrypt.hash(this.password,10);
+//     next();
+// })
+
+
 
 userSchema.methods.isPasswordCorrect = async function(password){
 
@@ -87,7 +90,7 @@ userSchema.methods.generateRefreshToken = function(){
 
     },
         process.env.REFRESH_TOKEN_SECRET,
-        {expiresIn: precess.env.REFRESH_TOKEN_EXPIRY
+        {expiresIn: process.env.REFRESH_TOKEN_EXPIRY
 
         });
 }
