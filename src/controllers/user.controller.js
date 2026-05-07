@@ -263,10 +263,71 @@ const getCurrentUser = asyncHandler(async (req,res,next)=>{
 
 )
 
+const updateAvatar = asyncHandler(async (req,res,next)=>{
+
+    const avatarLocalPath = req.file?.path;
+    if (!avatarLocalPath){
+        throw new ApiError(400, "Avatar image is required");
+    }
+    const avatar = await uploadToCloudinary(avatarLocalPath);
+    if (!avatar.url){
+        throw new ApiError(400, "Avatar image is not uploaded successfully");
+    }
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {avatar: avatar.url}
+        },
+        {new: true}
+    ).select("-password -refreshToken");
+    if (!user){
+        throw new ApiError(404, "User not found");}
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            user,
+            "Avatar updated successfully"
+        )
+    );
+
+
+})
+const updateCoverImage = asyncHandler(async (req,res,next)=>{
+
+    const coverLocalPath = req.file?.path;
+    if (!coverLocalPath){
+        throw new ApiError(400, "Cover image is required");
+    }
+    const coverImage = await uploadToCloudinary(coverLocalPath);
+    if (!coverImage.url){
+        throw new ApiError(400, "Cover image is not uploaded successfully");
+    }
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {coverImage: coverImage.url}
+        },
+        {new: true}
+    ).select("-password -refreshToken");
+    if (!user){
+        throw new ApiError(404, "User not found");}
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            user,
+            "Cover image updated successfully"
+        )
+    );
+
+
+})
+
 export {registerUser, 
         loginUser, 
         logoutUser, 
         refreshAccessToken, 
         UpdatePassword, 
         updateUserDetails, 
-        getCurrentUser};
+        getCurrentUser,
+        updateAvatar,
+        updateCoverImage };
