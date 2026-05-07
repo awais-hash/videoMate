@@ -4,6 +4,7 @@ import {ApiResponse} from "../utils/ApiResponse.js";
 import {User} from "../models/user.model.js";
 import mongoose from "mongoose";
 import {uploadToCloudinary} from "../utils/cloudinaryUpload.js";
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshToken = async(userId)=>{
   try {
@@ -89,7 +90,7 @@ return res.status(201).json(
 }
 )
 
-const loginUser = asyncHandler(async()=>{
+const loginUser = asyncHandler(async(req,res,next)=>{
     // get login details from frontend
     // validation - not empty
     // check if user exists with email or username
@@ -123,10 +124,20 @@ const options = {
     httpOnly: true,
     secure : true
 }
+return res.status(200).cookie("accessToken", accessToken, options)
+.cookie("refreshToken", refreshToken, options)
+.json(
+    new ApiResponse(
+        200,
+        {user: loggedInUser, accessToken, refreshToken},
+        "User logged in successfully"
+    )
+)
 })
 
 const logoutUser = asyncHandler(async (req,res,next)=>{
 await User.findByIdAndUpdate(req.user._id, {refreshToken: null}, {new: true});
+
     const options = {
         httpOnly: true,
         secure: true
@@ -144,8 +155,118 @@ clearCookie("refreshToken", options).json(
 
 })
 
+const refreshAccessToken = asyncHandler(async (req,res,next)=>{
+
+const IncomingRefreshToken = req.cookies.refreshToken;
+if (!IncomingRefreshToken){
+    throw new ApiError(401, "Refresh token is missing");}
 
 
+    const decodedToken = jwt.verify(IncomingRefreshToken,
+         process.env.REFRESH_TOKEN_SECRET);
+    
+   const user= await User.findById(decodedToken?._id);      
+if (!user){
+    throw new ApiError(404, "User not found");}
+
+if (user?.refreshToken !== IncomingRefreshToken){
+    throw new ApiError(401, "Invalid refresh token");}
+
+    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+    return res.status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200,
+          {accessToken, refreshToken},
+            "Access token refreshed successfully"
+    )
+    )
 
 
-export {registerUser, loginUser};
+})
+
+const UpdatePassword = asyncHandler(async (req,res,next)=>{
+    const {currentPassword, newPassword} = req.body;
+    const user = await User.findById(req.user?._id);
+    const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
+    if (!isPasswordCorrect){
+        throw new ApiError(401, "Current password is incorrect");}
+        user.password = newPassword;
+        await user.save({validateBeforeSave: false}); 
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                {},
+                "Password updated successfully"
+        )
+        )    
+    
+
+})
+
+
+const updateUserDetails = asyncHandler(async (req,res,next)=>{
+    const {fullName, email} = req.body;
+
+    if(!fullName || !email){
+        throw new ApiError(400, "Full name and email are required");}
+    const existingEmail = await User.findOne({email});  
+    if (existingEmail && existingEmail._id.toString() !== req.user._id.toString()){
+        throw new ApiError(409, "Email is already in use by another account");}  
+    
+   const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullName,
+                email,
+            }
+        },
+        {new: true}
+        
+    ).select("-password -refreshToken");
+    if (!user){
+        throw new ApiError(404, "User not found");}
+    
+        
+        
+ return res.status(200).json(
+    new ApiResponse(
+        200,
+        user,
+        "User details updated successfully"
+)
+)   
+
+})
+
+
+const getCurrentUser = asyncHandler(async (req,res,next)=>{
+ 
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            req.user,
+            "Current user details fetched successfully"
+    )
+    )
+
+
+}
+
+)
+
+export {registerUser, 
+        loginUser, 
+        logoutUser, 
+        refreshAccessToken, 
+        UpdatePassword, 
+        updateUserDetails, 
+        getCurrentUser};
