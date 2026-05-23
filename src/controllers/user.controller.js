@@ -77,15 +77,29 @@ const createdUser = await User.findById(user._id).select("-password -refreshToke
 if (!createdUser) { 
     throw new ApiError(500, "User creation failed");
 }
+const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
 
-return res.status(201).json(
-    new ApiResponse(
-     200,
-     createdUser,
-     "User registered successfully"
-     
-)
-)
+const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+const options = {
+    httpOnly: true,
+    secure: true
+}
+
+return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200, 
+            { user: loggedInUser},
+
+            // in mobile app, we have to send access token and refresh token in response body
+            //  because we cannot set cookies in mobile app
+            "User registered and logged in successfully"
+        )
+    );
 
 }
 )
@@ -98,6 +112,7 @@ const loginUser = asyncHandler(async(req,res,next)=>{
     // generate refresh token and access token
     // save refresh token in db
     // return response with user details, access token and success message
+    
 
 
 
