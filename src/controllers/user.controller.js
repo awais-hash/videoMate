@@ -207,7 +207,7 @@ if (user?.refreshToken !== IncomingRefreshToken){
 
 })
 
-const UpdatePassword = asyncHandler(async (req,res,next)=>{
+const updatePassword = asyncHandler(async (req,res,next)=>{
     const {currentPassword, newPassword} = req.body;
     const user = await User.findById(req.user?._id);
     const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
@@ -486,7 +486,7 @@ export {registerUser,
         loginUser, 
         logoutUser, 
         refreshAccessToken, 
-        UpdatePassword, 
+        updatePassword, 
         updateUserDetails, 
         getCurrentUser,
         updateAvatar,
