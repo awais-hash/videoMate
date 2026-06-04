@@ -344,6 +344,12 @@ const updateCoverImage = asyncHandler(async (req,res,next)=>{
 
 })
 
+const deleteAccount = asyncHandler(async (req, res) => {
+
+
+
+})
+
 const channelProfile = asyncHandler(async (req,res,next)=>{
 
 const {userName} = req.params;
@@ -476,12 +482,32 @@ return res.status(200).json(
 )
 
 
+})
+
+
+const clearWatchHistory = asyncHandler(async (req, res, next) => {
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {watchHistory: []}
+        },
+        {new: true}
+    )
+    if (!user){
+        throw new ApiError(404, "User not found");}
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            [],
+            "Watch history cleared successfully"
+        )
+    )
 
 
 
 
 })
-
 export {registerUser, 
         loginUser, 
         logoutUser, 
@@ -492,5 +518,6 @@ export {registerUser,
         updateAvatar,
         updateCoverImage,
         channelProfile,
-        getWatchHistory
+        getWatchHistory,
+        clearWatchHistory,
      };

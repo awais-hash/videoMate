@@ -1,5 +1,16 @@
 import {Router}  from 'express';
-import {registerUser,loginUser,logoutUser, refreshAccessToken, updatePassword, updateUserDetails, getCurrentUser, updateAvatar, updateCoverImage, channelProfile, getWatchHistory} from '../controllers/user.controller.js';
+import {registerUser,
+        loginUser,
+        logoutUser, 
+        refreshAccessToken, 
+        updatePassword, 
+        updateUserDetails, 
+        getCurrentUser, 
+        updateAvatar, 
+        updateCoverImage, 
+        channelProfile, 
+        getWatchHistory, 
+        clearWatchHistory} from '../controllers/user.controller.js';
 import {upload} from '../middlewares/multer.middleware.js';
 import {authMiddleware} from '../middlewares/auth.middleware.js';
 
@@ -18,9 +29,11 @@ router.route("/register").post(
     router.route("/update-password").post(authMiddleware, updatePassword);
     router.route("/update-details").post(authMiddleware, updateUserDetails);
     router.route("/current-user").get(authMiddleware, getCurrentUser);
+    router.route("/delete-account").delete(authMiddleware, deleteAccount);
     router.route("/update-avatar").patch(authMiddleware, upload.single("avatar"), updateAvatar);
     router.route("/update-cover-image").patch(authMiddleware, upload.single("coverImage"), updateCoverImage);
     router.route("/c/:username").get(authMiddleware, channelProfile);
     router.route("/history").get(authMiddleware, getWatchHistory)
+    router.route("/history-clear").delete(authMiddleware, clearWatchHistory)
 
 export default router;
