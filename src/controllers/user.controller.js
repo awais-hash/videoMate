@@ -365,7 +365,7 @@ const channel = User.aggregate([
     
     },
     {
-        lookup:{
+        $lookup:{
             from: "subscriptions",
             localField: "_id",
             foreignField: "channel",

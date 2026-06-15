@@ -20,7 +20,6 @@ router.route("/register").post(
     upload.fields([
         {name: "avatar", maxCount: 1},
         {name: "coverImage", maxCount: 1}
-            // i will later accept 3 to 4 coverimags
         ]),
     registerUser);
     router.route("/login").post(loginUser);
@@ -34,6 +33,6 @@ router.route("/register").post(
     router.route("/update-cover-image").patch(authMiddleware, upload.single("coverImage"), updateCoverImage);
     router.route("/c/:username").get(authMiddleware, channelProfile);
     router.route("/history").get(authMiddleware, getWatchHistory)
-    router.route("/history-clear").delete(authMiddleware, clearWatchHistory)
+    router.route("/history-clear").patch(authMiddleware, clearWatchHistory)
 
 export default router;
