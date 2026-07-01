@@ -343,7 +343,7 @@ const updateCoverImage = asyncHandler(async (req,res,next)=>{
 
 
 })
-
+// pending;
 const deleteAccount = asyncHandler(async (req, res) => {
 
 
