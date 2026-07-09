@@ -59,3 +59,70 @@ if (!createdVideo) {
 
 }
 )
+
+//Get a video by ID
+
+const getVideoById = asyncHandler(async (req, res) => {
+
+    const {videoId} = req.params;
+
+    const video = await Video.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(videoId)
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+          pipeline: [
+            {$project: {avatar: 1, username: 1, fullName:1}}
+          ]
+        }
+      },
+      {
+        $lookup:{
+            from: "likes",
+            localField: "_id",
+            foreignField: "video",
+            as: "likes"
+        }
+      },
+      {
+        $lookup:{
+            from: "comments",
+            localField: "_id",
+            foreignField: "video",
+            as: "comments"  
+
+      }
+    },
+    {
+         $addFields: {
+            owner: { $first: "$owner" }, 
+            likesCount: { $size: "$likes" },
+            commentsCount: { $size: "$comments" }, 
+            isLiked: {
+                $cond: {
+                    if: { $in: [req.user?._id, "$likes.likedBy"] },
+                    then: true,
+                    else: false
+                }
+            }
+        }
+    },
+    {
+        $project:{
+            likes: 0,
+            comments: 0
+        }
+    }
+
+
+
+    ])
+
+})

@@ -374,7 +374,7 @@ const channel = User.aggregate([
     },
 
     {
-        lookup:{
+        $lookup:{
             from: "subscriptions",
             localField: "_id",
             foreignField: "subscriber",
@@ -404,7 +404,6 @@ const channel = User.aggregate([
                 isSubscribed: 1,
                 avatar: 1,
                 coverImage: 1,
-                email: 1
 
             }
 
