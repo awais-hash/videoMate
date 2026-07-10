@@ -269,13 +269,13 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
     }
 
     const updatedVideo = await Video.findByIdAndUpdate(
-        videoId,
-        {
+        videoId,{
+       $set: {
             title: title !== undefined ? title : video.title,
             description: description !== undefined ? description : video.description,
             thumbnail: newThumbnailUrl,
             thumbnailPublicId: newThumbnailPublicId,
-        },
+        }},
         { new: true }
     );
 
