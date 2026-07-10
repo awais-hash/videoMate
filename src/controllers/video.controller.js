@@ -125,4 +125,76 @@ const getVideoById = asyncHandler(async (req, res) => {
 
     ])
 
+    if (!video?.length) {
+        throw new ApiError(404, "Video not found");
+    }
+
+    await Video.findByIdAndUpdate(videoId,
+         {
+            $inc: {views: 1}
+        }, 
+         {new: true}
+        );
+    await User.findByIdAndUpdate(req.user?._id,
+         {
+            $addToSet: {watchHistory: videoId}
+         },
+         {new: true}
+        );
+
+        return res.status(200).json(new ApiResponse(200, video[0], "Video fetched successfully"));
+
+
+})
+
+// get all videos 
+
+const getAllVideos = asyncHandler(async (req, res) => {
+
+
+
+    const {
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        order = "desc",
+        userId,
+        query
+    } = req.query;
+
+    const pipeline= [];
+
+    if (query){
+        pipeline.push({
+            $match: {
+                $or:[
+                    {title: {$regex: query, $options: "i"}},
+                    {description: {$regex: query, $options: "i"}}
+                ]
+            }
+        })
+    }
+    if (userId){
+        pipeline.push({
+            $match: {
+                owner: new mongoose.Types.ObjectId(userId)
+            }
+        })
+    }
+
+    pipeline.push({
+        $match:{
+            isPublished: true
+        }
+    })
+
+
+    const sort = {};
+    sort[sortBy] = order === "asc" ? 1 : -1;
+    pipeline.push({
+        $sort: sort
+    })
+
+    
+
 })
