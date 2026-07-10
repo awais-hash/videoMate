@@ -15,8 +15,8 @@ if (!title || !description) {
     throw new ApiError(400, "Title and description are required");
 }
 
-const videoFileLocalPath = req.files?.videoFile?.[0]?.path; 
-const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;   
+const videoFileLocalPath = req.file?.videoFile?.[0]?.path; 
+const thumbnailLocalPath = req.file?.thumbnail?.[0]?.path;   
 if (!videoFileLocalPath) {
     throw new ApiError(400, "Video file is required");
 }
@@ -37,13 +37,19 @@ if (!thumbnailLocalPath) {
 const videoFile = await uploadToCloudinary(videoFileLocalPath);
 const thumbnail = await uploadToCloudinary(thumbnailLocalPath);
 
-if (!videoFile?.url || !thumbnail?.url) {
+
+if (!videoFile?.url || !thumbnail?.url ) {
     throw new ApiError(500, "Failed to upload video or thumbnail");
+}
+if (!videoFile?.public_id || !thumbnail?.public_id) {
+    throw new ApiError(500, "Failed to get public ID for video or thumbnail");
 }
 
     const createdVideo = await Video.create({
     videoFile: videoFile.url,
     thumbnail: thumbnail.url,
+    videoFilePublicId: videoFile.public_id,
+    thumbnailPublicId: thumbnail.public_id,
     owner: req.user._id,
     title,
     description,
@@ -79,7 +85,7 @@ const getVideoById = asyncHandler(async (req, res) => {
           foreignField: "_id",
           as: "owner",
           pipeline: [
-            {$project: {avatar: 1, username: 1, fullName:1}}
+            {$project: {avatar: 1, userName: 1, fullName:1}}
           ]
         }
       },
@@ -194,7 +200,95 @@ const getAllVideos = asyncHandler(async (req, res) => {
     pipeline.push({
         $sort: sort
     })
+   
+    pipeline.push({
+        $skip: (parseInt(page) - 1) * parseInt(limit)
+   
+    })
 
+    pipeline.push({
+        $limit: parseInt(limit)
+    })
     
 
+    pipeline.push({
+        $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+        pipeline: [
+            {$project: 
+                {avatar: 1, userName: 1, fullName:1}
+            }
+        ]
+    }
+    })
+
+    pipeline.push({
+        $addFields: {
+            owner: { $first: "$owner" }
+        }
+    })
+
+    const videos = await Video.aggregate(pipeline);
+    return res.status(200).json(new ApiResponse(200, videos, "Videos fetched successfully"));
 })
+
+//update video details
+
+const updateVideoDetails = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    const { title, description } = req.body;
+    const localThumbnailPath = req.file?.path;
+
+    const video = await Video.findById(videoId);
+    if (!video) {
+        throw new ApiError(404, "Video not found");
+    }
+
+    if (!req.user?._id || video.owner.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You are not the owner of this video");
+    }
+
+    if (title === undefined && description === undefined && !localThumbnailPath) {
+        throw new ApiError(400, "At least one field must be provided for update");
+    }
+
+    let newThumbnailUrl = video.thumbnail;
+    let newThumbnailPublicId = video.thumbnailPublicId; 
+    const oldThumbnailPublicId = video.thumbnailPublicId;
+
+    if (localThumbnailPath) {
+        const uploadedThumbnail = await uploadToCloudinary(localThumbnailPath);
+        if (!uploadedThumbnail?.url) {
+            throw new ApiError(500, "Failed to upload new thumbnail");
+        }
+        newThumbnailUrl = uploadedThumbnail.url;
+        newThumbnailPublicId = uploadedThumbnail.public_id;
+    }
+
+    const updatedVideo = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            title: title !== undefined ? title : video.title,
+            description: description !== undefined ? description : video.description,
+            thumbnail: newThumbnailUrl,
+            thumbnailPublicId: newThumbnailPublicId,
+        },
+        { new: true }
+    );
+
+    
+    if (localThumbnailPath && oldThumbnailPublicId) {
+        try {
+            await deleteFromCloudinary(oldThumbnailPublicId);
+        } catch (err) {
+            console.error("Failed to delete old thumbnail from Cloudinary:", err);
+        }
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, updatedVideo, "Video details updated successfully"));
+});
