@@ -37,24 +37,19 @@ try {
 }
 
 
-export const deleteFromCloudinary = async (publicId) => {
-
-try {
-    if(!publicId) {
-        console.error("Public ID is required to delete from Cloudinary");
+export const deleteFromCloudinary = async (publicId, resourceType = "image") => {
+    try {
+        if (!publicId) {
+            console.error("Public ID is required to delete from Cloudinary");
+            return null;
+        }
+        const response = await cloudinary.uploader.destroy(publicId, {
+            resource_type: resourceType,  
+            invalidate: true
+        });
+        return response;
+    } catch (error) {
+        console.error("Error deleting from Cloudinary:", error);
         return null;
-    };
-    const response = await cloudinary.uploader.destroy(publicId,{
-        resourse_type : "auto",
-        invalidate: true
-    })
-
-    return response;
-
-} catch (error) {
-
-    console.error("Error deleting from Cloudinary:", error);
-    return null;
-}
-
-} // is trha utility function banai gai h jo ki cloudinary se file delete krne k liye use hoti h
+    }
+};
