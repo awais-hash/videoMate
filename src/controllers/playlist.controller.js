@@ -79,15 +79,75 @@ const addVideoToPlaylist = asyncHandler(async()=>{
     .status(200)
     .json(new ApiResponse(200, playlist, "Video added to playlist successfully"));
 
-  
-
-
 })
 
+const getUserPlaylists = asyncHandler(async ()=>{
+  const {userId} = req.params;
+  if(!userId ||!mongoose.Types.ObjectId.isValid(userId)){
+    throw new ApiError(404,"Valid user Id is requied")
+  }
+  const playlists = await Playlist.aggregate([
+    {
+      $match : { owner: mongoose.Types.ObjectId(userId)
+    }
+  },
+
+  {
+    $lookup:{
+      from: "videos",
+      localField : "videos",
+      foreignField:"_id",
+      as: "coverVideoData",
+      pipeline:[
+        {
+          $match:{
+            $isPublished: true
+          }
+        },
+        {
+          $limit: 1
+        },
+        {
+          $project:{
+            thumbnail :1
+          }
+        }
+      ]
+    }
+  },
+  {
+    $addFields:{
+      totalVideos:{
+        $size: "$videos"
+
+      },
+      coverImage:{
+        $first: "$cover"
+      }
+
+    }
     
+  },
+  {
+    $project:{
+      name:1,
+      description:{ $ifNull: ["$description", "No description available"] }, 
+      totalVideos: 1,
+      coverImage: "$coverImage.thumbnail",
+      updatedAt:1,
+
+    }
+  },
+
+  {
+    $sort:{
+      updatedAt: -1
+    }
+  }
 
 
-
-
-
+  ])
+return res
+    .status(200)
+    .json(new ApiResponse(200, playlists, "User playlists fetched successfully")); 
 })
