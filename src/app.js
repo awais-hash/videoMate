@@ -9,6 +9,7 @@ import playlistRouter from "./routes/playlist.route.js";
 import subscriptionRouter from "./routes/subscription.route.js";
 import tweetRouter from "./routes/tweet.route.js";
 import healthRouter from "./routes/health.route.js";
+import errorHandler from "./middlewares/errorHandler.js"; 
 
 
 const app = express()
@@ -37,8 +38,7 @@ app.use((req, res) => {
     statusCode: 404,
   })})
 
-  
-
+app.use(errorHandler);
 
 export {app};
 
