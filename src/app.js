@@ -10,6 +10,7 @@ import subscriptionRouter from "./routes/subscription.route.js";
 import tweetRouter from "./routes/tweet.route.js";
 import healthRouter from "./routes/health.route.js";
 import errorHandler from "./middlewares/errorHandler.js"; 
+import { generalLimiter } from "./middlewares/rateLimit.middleware.js";
 
 
 const app = express()
@@ -21,7 +22,7 @@ app.use(cors({
 app.use(express.json({limit: '20kb'}))
 app.use(express.urlencoded({extended: true, limit: '20kb'}))
 app.use(cookieParser())
-
+app.use(generalLimiter)
 app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRouter);
