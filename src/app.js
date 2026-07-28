@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import { corsOptions } from "./config/cors.config.js";
 import userRoute from "./routes/user.route.js";
 import videoRouter from "./routes/video.route.js";
 import commentRouter from "./routes/comment.route.js";
@@ -15,10 +16,7 @@ import { generalLimiter } from "./middlewares/rateLimit.middleware.js";
 
 const app = express()
 
-app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-}))
+app.use(cors(corsOptions));
 app.use(express.json({limit: '20kb'}))
 app.use(express.urlencoded({extended: true, limit: '20kb'}))
 app.use(cookieParser())
