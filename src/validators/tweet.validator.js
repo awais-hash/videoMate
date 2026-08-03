@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const createTweetSchema = z.object({
+const createTweetSchema = z.object({
   content: z
     .string()
     .min(1, "Tweet cannot be empty")
@@ -8,6 +8,8 @@ export const createTweetSchema = z.object({
     .trim(),
 });
 
-export const updateTweetSchema = z.object({
+const updateTweetSchema = z.object({
   content: z.string().min(1, "Tweet cannot be empty").max(280).trim(),
 });
+
+export { createTweetSchema, updateTweetSchema };

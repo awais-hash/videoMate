@@ -17,3 +17,5 @@ const validate = (schema, source = "body") => {
     next();
   };
 };
+
+export default validate;

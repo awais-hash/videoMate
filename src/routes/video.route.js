@@ -9,18 +9,28 @@ import {publishVideo,
     togglePublishStatus,
     deleteVideo} from '../controllers/video.controller.js';
 import { uploadLimiter } from '../middlewares/rateLimit.middleware.js';    
+import validate from '../middlewares/validate.middleware.js';
+import { mongoIdParamSchema } from '../validators/common.validator.js';
+import { publishVideoSchema, updateVideoDetailsSchema, getAllVideosQuerySchema } from '../validators/video.validator.schema.js';
 
     const router = Router();
 
-    router.route('/publish').post(uploadLimiter, authMiddleware, upload.fields([
+    router.route('/publish').post(uploadLimiter, authMiddleware,validate(publishVideoSchema), upload.fields([
         {name: "videoFile", maxCount: 1},
         {name: "thumbnail", maxCount: 1}
         ]), publishVideo);
     router.route('/').get(getAllVideos);
     router.route('/:videoId')
-    .get(optionalAuth, getVideoById)
-    .patch(uploadLimiter,authMiddleware, upload.single("thumbnail"), updateVideoDetails)
-    .delete(authMiddleware, deleteVideo);
-    router.route('/:videoId/publish').patch(authMiddleware, togglePublishStatus);    
+    .get(validate(mongoIdParamSchema("videoId"), "params"),optionalAuth, getVideoById)
+    .patch(uploadLimiter,authMiddleware,
+           validate(mongoIdParamSchema("videoId"), "params"),     
+           validate(updateVideoDetailsSchema), upload.single("thumbnail"), 
+           updateVideoDetails
+        )
+    .delete(authMiddleware,validate(mongoIdParamSchema("videoId"), "params"), deleteVideo);
+    router.route('/:videoId/publish').
+    patch(authMiddleware, 
+          validate(mongoIdParamSchema("videoId"), "params"),
+     togglePublishStatus);    
 
     export default router;

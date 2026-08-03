@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { paginationSchema } from "./common.validator.js";
 
-export const addCommentSchema = z.object({
+const addCommentSchema = z.object({
   content: z
     .string()
     .min(1, "Comment cannot be empty")
@@ -9,10 +9,12 @@ export const addCommentSchema = z.object({
     .trim(),
 });
 
-export const updateCommentSchema = z.object({
+const updateCommentSchema = z.object({
   content: z.string().min(1, "Comment cannot be empty").max(500).trim(),
 });
 
-export const getVideoCommentsQuerySchema = paginationSchema.extend({
+const getVideoCommentsQuerySchema = paginationSchema.extend({
   sortBy: z.enum(["createdAt"]).default("createdAt"),
 });
+
+export{ addCommentSchema, updateCommentSchema, getVideoCommentsQuerySchema };
