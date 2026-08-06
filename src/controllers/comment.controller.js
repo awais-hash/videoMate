@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import {Comment} from '../models/comment.model.js';
-import {Post} from '../models/post.model.js';
 import {User} from '../models/user.model.js';
 import {Like} from '../models/like.model.js';
 import{Tweet} from '../models/tweet.model.js';

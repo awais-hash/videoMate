@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import ApiRespone from "../utils/ApiResponse";
-import ApiError from "../utils/ApiError";
-import asyncHandler from "../utils/asyncHandler"
-import {Video}  from "../models/video.model";
-import {Playlist} from "../models/playlist.model";
+import ApiRespone from "../utils/ApiResponse.js";
+import ApiError from "../utils/ApiError.js";
+import asyncHandler from "../utils/asyncHandler.js"
+import {Video}  from "../models/video.model.js";
+import {Playlist} from "../models/playlist.model.js";
 
 const createPlaylist = asyncHandler(async (req,res)=>{
     

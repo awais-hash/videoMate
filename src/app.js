@@ -1,8 +1,8 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
-import { corsOptions } from "./config/cors.config.js";
-import userRoute from "./routes/user.route.js";
+import corsOptions  from "./config/cors.config.js";
+import userRouter from "./routes/user.route.js";
 import videoRouter from "./routes/video.route.js";
 import commentRouter from "./routes/comment.route.js";
 import likeRouter from "./routes/like.route.js";
@@ -10,7 +10,7 @@ import playlistRouter from "./routes/playlist.route.js";
 import subscriptionRouter from "./routes/subscription.route.js";
 import tweetRouter from "./routes/tweet.route.js";
 import healthRouter from "./routes/health.route.js";
-import errorHandler from "./middlewares/errorHandler.js"; 
+import errorHandler from "./middlewares/errorHandler.middleware.js"; 
 import { generalLimiter } from "./middlewares/rateLimit.middleware.js";
 
 

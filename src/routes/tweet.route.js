@@ -5,7 +5,7 @@ import {
   updateTweet,
   deleteTweet,
 } from "../controllers/tweet.controller.js";
-import { authMiddleWare } from "../middlewares/auth.middleware.js";
+import  {authMiddleware}  from "../middlewares/auth.middleware.js";
 import { createTweetSchema, updateTweetSchema } from "../validators/tweet.validator.js";
 import {mongoIdParamSchema} from "../validators/common.validator.js";
 import validate from "../middlewares/validate.middleware.js";

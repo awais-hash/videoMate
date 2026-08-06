@@ -2,8 +2,8 @@ import rateLimit from "express-rate-limit";
 
 const generalLimiter = rateLimit(
     {
-        windowMS: 15* 60 * 1000,
-        max: 100,
+        windowMs: 15* 60 * 1000,
+        limit: 100,
         message:{
             success: false,
             message: "Too many requests, Please try gaian later.",
@@ -16,8 +16,8 @@ const generalLimiter = rateLimit(
         }
     )
 const authLimiter = rateLimit( {
-        windowMS: 15* 60 * 1000,
-        max: 5,
+        windowMs: 15* 60 * 1000,
+        limit: 5,
         message:{
             success: false,
             message: "Too many authentication attempts. Please try again after 15 minutes.",
@@ -31,8 +31,8 @@ const authLimiter = rateLimit( {
    ) 
 const uploadLimiter = rateLimit(
      {
-        windowMS: 60* 60 * 1000,
-        max: 20,
+        windowMs: 60* 60 * 1000,
+        limit: 20,
         message:{
             success: false,
             message: "Too many uploads. Please try again later.",

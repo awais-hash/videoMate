@@ -1,10 +1,10 @@
 import mongoose, {isValidObjectId} from "mongoose";
 import  asyncHandler  from "../utils/asyncHandler.js";
 import  ApiError from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
+import  ApiResponse  from "../utils/ApiResponse.js";
 import { Subscription } from "../models/subscription.model.js";
 
-const toggleSubscription = asyncHandler((req,res)=>{
+const toggleSubscription = asyncHandler(async (req,res)=>{
    const {channelId} = req.params;
    if (!channelId || !isValidObjectId(channelId)){
     throw new ApiError (404, "Valid channelId is required");
@@ -38,7 +38,7 @@ const toggleSubscription = asyncHandler((req,res)=>{
    )
 });
 
-const getSubscribedChannels = asyncHandler((req,res)=>{
+const getSubscribedChannels = asyncHandler(async(req,res)=>{
    if (!req.user?._id) {
     throw new ApiError(401, "Unauthorized Request"); 
   }

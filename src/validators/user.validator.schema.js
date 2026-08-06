@@ -44,8 +44,7 @@ const updatePasswordSchema = z
     message: "New password must be different from the old password",
     path: ["newPassword"],
   });
-
-export const updateUserDetailsSchema = z.object({
+const updateUserDetailsSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters long").max(50).trim().optional(),
   email: z.email().trim().toLowerCase().optional(),
 });
