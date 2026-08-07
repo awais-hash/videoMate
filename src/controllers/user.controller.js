@@ -65,11 +65,11 @@ const user = await User.create({
     userName,
     fullName,
     email,
-    password: password,
-    avatar: {url: avatar.url, public_id: avatar.public_id},
-    coverImage: {url: coverImage?.url, public_id: coverImage?.public_id}
-
-
+    password,
+    avatar: avatar.url,
+    avatarPublicId: avatar.public_id,
+    coverImage: coverImage?.url,
+    coverImagePublicId: coverImage?.public_id,
 })
 
 const createdUser = await User.findById(user._id).select("-password -refreshToken");

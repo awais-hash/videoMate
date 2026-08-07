@@ -9,7 +9,7 @@ const health= {
     uptime: process.uptime(),
     environment :process.env.NODE_ENV || "development",
     database:{
-            status: disconnected
+            status: "disconnected"
     },
     memory: {
         rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + " MB",
@@ -29,7 +29,7 @@ const health= {
     health.database.status = "error";
     health.database.error = error.msg;
  }
-   const databaseStatus = health.database.status === 1 ? 200: 503;
+   const databaseStatus = health.database.status === "connected" ? 200: 503;
    res.status(databaseStatus).json(health)
 
 }

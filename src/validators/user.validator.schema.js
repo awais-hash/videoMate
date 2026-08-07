@@ -9,7 +9,7 @@ const passwordSchema = z
 
 
 const registerSchema = z.object({
-  username: z
+  userName: z
     .string()
     .min(3, "Username must be at least 3 characters long")
     .max(20, "Username cannot exceed 20 characters")
@@ -50,7 +50,7 @@ const updateUserDetailsSchema = z.object({
 });
 
 const channelProfileParamsSchema = z.object({
-  username: z.string().min(1, "Username is required").trim().toLowerCase(),
+  userName: z.string().min(1, "Username is required").trim().toLowerCase(),
 });
 
 export{

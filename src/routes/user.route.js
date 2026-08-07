@@ -28,11 +28,11 @@ const router = Router();
 router.route("/register").post(
     authLimiter,
     uploadLimiter,
-    validate(registerSchema),
     upload.fields([
         {name: "avatar", maxCount: 1},
         {name: "coverImage", maxCount: 1}
         ]),
+        validate(registerSchema),
     registerUser);
     router.route("/login").post(authLimiter,validate(loginSchema),loginUser);
     router.route("/logout").post(authMiddleware, logoutUser);
