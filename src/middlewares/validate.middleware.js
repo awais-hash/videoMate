@@ -9,7 +9,7 @@ const validate = (schema, source = "body") => {
             message: issue.message
 
         }));
-    return next(new ApiEror("Validation Error",400, errors));
+    return next(new ApiEror(400,"Validation Error", errors));
 
     }
 

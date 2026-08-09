@@ -180,7 +180,7 @@ if (!IncomingRefreshToken){
     const decodedToken = jwt.verify(IncomingRefreshToken,
          process.env.REFRESH_TOKEN_SECRET);
     
-   const user= await User.findById(decodedToken?._id);      
+   const user= await User.findById(decodedToken?.id);      
 if (!user){
     throw new ApiError(404, "User not found");}
 
@@ -357,7 +357,7 @@ const {userName} = req.params;
 if(!userName.trim()){
 throw new ApiError(400, "Username is required");}
 
-const channel = User.aggregate([
+const channel =  await User.aggregate([
     {
         $match: {
             userName : userName?.toLowerCase()

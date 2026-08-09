@@ -43,7 +43,7 @@ router.route("/register").post(
     // router.route("/delete-account").delete(authMiddleware, deleteAccount);
     router.route("/update-avatar").patch(uploadLimiter, authMiddleware, upload.single("avatar"), updateAvatar);
     router.route("/update-cover-image").patch(uploadLimiter, authMiddleware, upload.single("coverImage"), updateCoverImage);
-    router.route("/c/:username").get(authMiddleware,validate(channelProfileParamsSchema, "params"), channelProfile);
+    router.route("/c/:userName").get(authMiddleware,validate(channelProfileParamsSchema, "params"), channelProfile);
     router.route("/history").get(authMiddleware, getWatchHistory)
     router.route("/history-clear").patch(authMiddleware, clearWatchHistory)
 

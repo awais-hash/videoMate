@@ -25,13 +25,13 @@ const userSchema = new Schema({
        trim: true,
         index:true,
     },
-     avatar:{
-        type:String, 
-        required:true,
+     avatar: {
+        url: { type: String, default: "" },
+        public_id: { type: String, default: "" }
     },
-     coverImage:{
-        type:String, 
-        required:false,
+    coverImage: {
+        url: { type: String, default: "" },
+        public_id: { type: String, default: "" }
     },
     avatarPublicId:{
         type:String, 
