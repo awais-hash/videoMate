@@ -11,14 +11,21 @@ import {publishVideo,
 import { uploadLimiter } from '../middlewares/rateLimit.middleware.js';    
 import validate from '../middlewares/validate.middleware.js';
 import { mongoIdParamSchema } from '../validators/common.validator.js';
-import { publishVideoSchema, updateVideoDetailsSchema, getAllVideosQuerySchema } from '../validators/video.validator.schema.js';
+import { publishVideoSchema,publishVideoFilesSchema, updateVideoDetailsSchema, getAllVideosQuerySchema } from '../validators/video.validator.schema.js';
 
     const router = Router();
 
-    router.route('/publish').post(uploadLimiter, authMiddleware,validate(publishVideoSchema), upload.fields([
+    router.route('/publish').post(
+    uploadLimiter,
+    authMiddleware,
+    upload.fields([
         {name: "videoFile", maxCount: 1},
         {name: "thumbnail", maxCount: 1}
-        ]), publishVideo);
+    ]),
+    validate(publishVideoFilesSchema, "files"),
+    validate(publishVideoSchema, "body"),
+    publishVideo
+        );
     router.route('/').get(getAllVideos);
     router.route('/:videoId')
     .get(validate(mongoIdParamSchema("videoId"), "params"),optionalAuth, getVideoById)
