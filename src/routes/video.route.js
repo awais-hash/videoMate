@@ -30,8 +30,9 @@ import { publishVideoSchema,publishVideoFilesSchema, updateVideoDetailsSchema, g
     router.route('/:videoId')
     .get(validate(mongoIdParamSchema("videoId"), "params"),optionalAuth, getVideoById)
     .patch(uploadLimiter,authMiddleware,
-           validate(mongoIdParamSchema("videoId"), "params"),     
-           validate(updateVideoDetailsSchema), upload.single("thumbnail"), 
+           validate(mongoIdParamSchema("videoId"), "params"),
+           upload.single("thumbnail"),     
+           validate(updateVideoDetailsSchema),  
            updateVideoDetails
         )
     .delete(authMiddleware,validate(mongoIdParamSchema("videoId"), "params"), deleteVideo);
