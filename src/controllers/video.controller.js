@@ -287,10 +287,10 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     }
 
     const updatedStatusVideo = await Video.findByIdAndUpdate(
-        videoId,
-        [{ $set: { isPublished: { $not: "$isPublished" } } }],
-        { new: true }
-    );
+    videoId,
+    { $set: { isPublished: !video.isPublished } },
+    { new: true }
+);
 
     return res
         .status(200)
