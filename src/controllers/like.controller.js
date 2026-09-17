@@ -123,7 +123,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
             foreignField: "_id",
             as: "video",
             pipeline: [
-                {$match:{
+                {$lookup:{
                     from: "users",
                     localField: "owner",
                     foreignField: "_id",
