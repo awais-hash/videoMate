@@ -38,62 +38,51 @@ const toggleSubscription = asyncHandler(async (req,res)=>{
    )
 });
 
-const getSubscribedChannels = asyncHandler(async(req,res)=>{
-   if (!req.user?._id) {
-    throw new ApiError(401, "Unauthorized Request"); 
-  }
+const getSubscribedChannels = asyncHandler(async (req, res) => {
+    const { subscriberId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(subscriberId)) {
+        throw new ApiError(400, "Invalid Subscriber ID");
+    }
+
     const subscribedChannels = await Subscription.aggregate([
         {
-            $match: {
-                subscriber: mongoose.Types.ObjectId(req.user?._id)
-            }
-
+            $match: { subscriber: new mongoose.Types.ObjectId(subscriberId) }
         },
         {
-            $lookup:{
+            $lookup: {
                 from: "users",
                 localField: "channel",
                 foreignField: "_id",
-                as : "channel",
-                pipeline:[
+                as: "channel",
+                pipeline: [
                     {
-                        $project:{
-                            userName:1,
-                            fullName:1,
-                            avatar: 1,
+                        $project: {
+                            fullName: 1,
+                            username: 1,
+                            avatar: 1
                         }
                     }
                 ]
             }
         },
         {
-            $addFields:{
-                channel:{
-                    $first: "$channel"
-                }
-            },
-
+            $addFields: {
+                channel: { $first: "$channel" }
+            }
         },
         {
             $project: {
-                id:0,
                 channel: 1,
-                createdAt: 1,
-
-
+                createdAt: 1
             }
         }
-    ])
+    ]);
 
-     return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        subscribedChannels,   
-        "Subscribed channels fetched successfully"
-      ))
-})
+    return res.status(200).json(
+        new ApiResponse(200, subscribedChannels, "Subscribed channels fetched successfully")
+    );
+});
 const getChannelSubscribers = asyncHandler(async (req, res) => {
    if (!req.user?._id) {
     throw new ApiError(401, "Unauthorized Request"); 
