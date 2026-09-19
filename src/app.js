@@ -12,6 +12,9 @@ import tweetRouter from "./routes/tweet.route.js";
 import healthRouter from "./routes/health.route.js";
 import errorHandler from "./middlewares/errorHandler.middleware.js"; 
 import { generalLimiter } from "./middlewares/rateLimit.middleware.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.config.js";
+
 
 
 const app = express()
@@ -21,6 +24,12 @@ app.use(express.json({limit: '20kb'}))
 app.use(express.urlencoded({extended: true, limit: '20kb'}))
 app.use(cookieParser())
 app.use(generalLimiter)
+
+app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: ".swagger-ui.topbar { display: none }",
+  customSiteTitle: "VideoMate API Docs",
+}));
+
 app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRouter);
