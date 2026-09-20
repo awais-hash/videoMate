@@ -18,7 +18,7 @@ import swaggerSpec from "./config/swagger.config.js";
 
 
 const app = express()
-
+app.set("trust proxy", 1);
 app.use(cors(corsOptions));
 app.use(express.json({limit: '20kb'}))
 app.use(express.urlencoded({extended: true, limit: '20kb'}))
