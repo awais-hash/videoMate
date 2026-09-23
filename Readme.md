@@ -381,7 +381,7 @@ For major changes, please open an issue first to discuss what you would like to 
 
 ## 👤 Author
 
-**Awais Ahmad**
+**Ahmad Haral**
 
 - GitHub: [@awais-hash](https://github.com/awais-hash)
 - Project: [github.com/awais-hash/videoMate](https://github.com/awais-hash/videoMate)
