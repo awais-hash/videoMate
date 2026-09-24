@@ -10,8 +10,8 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000/api/v1",
-        description: "Development server",
+        url: 'https://videomate-production-5dc0.up.railway.app/api/v1',
+        description: 'Production server'
       },
     ],
     components: {
