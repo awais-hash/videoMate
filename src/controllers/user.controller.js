@@ -32,14 +32,21 @@ const registerUser = asyncHandler(async (req,res,next)=>{
     // return response with user details and success message
 
     const {userName,email,password,fullName} = req.body;
-    if ([userName,email,password,fullName].some((field)=> field?.trim() == ""))
-{
-    throw new ApiError(400, "All fields are required"); 
-}
-   
+
+    if (!password?.trim() || !fullName?.trim()) {
+        throw new ApiError(400, "Full name and password are required");
+    }
+
+    if (!userName?.trim() && !email?.trim()) {
+        throw new ApiError(400, "Either username or email is required");
+    }
 
 
-const existingUser = await User.findOne({$or: [{userName}, {email}]});
+const orConditions = [];
+if (userName?.trim()) orConditions.push({ userName });
+if (email?.trim()) orConditions.push({ email });
+
+const existingUser = await User.findOne({ $or: orConditions });
 if (existingUser)
 {
     throw new ApiError(409, "User with the same username or email already exists");
@@ -67,12 +74,12 @@ const user = await User.create({
     email,
     password,
    avatar: {
-        public_id: avatarUpload.public_id,
-        url: avatarUpload.secure_url // secure_url Cloudinary se image ka link dega
+        public_id: avatar.public_id,
+        url: avatar.secure_url // secure_url Cloudinary se image ka link dega
     },
     coverImage: {
-        public_id: coverUpload ? coverUpload.public_id : "",
-        url: coverUpload ? coverUpload.secure_url : ""
+        public_id: coverImage ? coverImage.public_id : "",
+        url: coverImage ? coverImage.secure_url : ""
     }
 })
 
@@ -122,11 +129,19 @@ const loginUser = asyncHandler(async(req,res,next)=>{
 
     const {email,userName,password} = req.body;
 
-    if ([email,userName,password].some((field)=> field?.trim() == ""))
-{
-    throw new ApiError(400, "All fields are required"); }
+    if (!password?.trim()) {
+        throw new ApiError(400, "Password is required");
+    }
 
-const user = await User.findOne({$or: [{email}, {userName}]});
+    if (!email?.trim() && !userName?.trim()) {
+        throw new ApiError(400, "Either email or username is required");
+    }
+
+const orConditions = [];
+if (email?.trim()) orConditions.push({ email });
+if (userName?.trim()) orConditions.push({ userName });
+
+const user = await User.findOne({ $or: orConditions });
 if (!user){
     throw new ApiError(404, "User not found");}
 
@@ -524,3 +539,4 @@ export {registerUser,
         getWatchHistory,
         clearWatchHistory,
      };
+     
