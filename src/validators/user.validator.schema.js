@@ -15,25 +15,27 @@ const registerSchema = z.object({
     .max(20, "Username cannot exceed 20 characters")
     .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores")
     .trim()
-    .toLowerCase(),
+    .toLowerCase()
+    .optional(),
 
-  email: z.email("Please enter a valid email address").trim().toLowerCase(),
+  email: z.email("Please enter a valid email address").trim().toLowerCase().optional(),
 
   fullName: z.string().min(3, "Full name must be at least 3 characters long").max(50).trim(),
 
   password: passwordSchema,
-});
-
-const loginSchema = z
-  .object({
-    email: z.email().trim().toLowerCase().optional(),
-    username: z.string().trim().toLowerCase().optional(),
-    password: z.string().min(1, "Password is required"),
-  })
-  .refine((data) => data.email || data.username, {
+}).refine((data) => !!data.email || !!data.userName, {
     message: "Either email or username is required",
     path: ["email"],
-  });
+});
+
+const loginSchema = z.object({
+    email: z.string().email().optional(),
+    userName: z.string().optional(),
+    password: z.string().min(1, "Password is required"),
+}).refine((data) => !!data.email || !!data.userName, {
+    message: "Either email or username is required",
+    path: ["email"],
+});
 
 const updatePasswordSchema = z
   .object({
