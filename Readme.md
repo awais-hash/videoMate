@@ -1,5 +1,3 @@
-<div align="center">
-
 # 🎬 VideoMate API
 
 **A production-style REST API for a video-sharing platform with social features — built with Node.js, Express 5 and MongoDB.**
@@ -8,11 +6,9 @@
 [![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose%209-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Swagger](https://img.shields.io/badge/API%20Docs-Swagger%20UI-85EA2D?logo=swagger&logoColor=black)](#-api-documentation)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#-license)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#-license)
 
 [API Docs](#-api-documentation) · [Getting Started](#-getting-started) · [Endpoints](#-api-endpoints) · [Contributing](#-contributing)
-
-</div>
 
 ---
 
@@ -48,6 +44,7 @@ It focuses on clean architecture and safe defaults: every request is validated w
 
 - **Authentication & Authorization** — register, login, logout, JWT access + refresh tokens, password change
 - **User profiles** — avatar and cover image upload, channel profile pages, watch history
+- **Account deletion** — password-confirmed account deletion with transactional cascade cleanup of all related data (videos, comments, likes, playlists, subscriptions, tweets) and Cloudinary asset cleanup
 - **Videos** — upload video + thumbnail, publish/unpublish, edit, delete, list with pagination
 - **Comments** — add, edit, delete and paginate comments on videos
 - **Likes** — toggle likes on videos, comments and tweets; list liked videos
@@ -149,8 +146,7 @@ curl https://videomate-production-5dc0.up.railway.app/api/v1/health
 | Command | Description |
 | --- | --- |
 | `npm run dev` | Starts the server with Nodemon and loads `.env` |
-
-For production, run the entry file directly with Node: `node src/index.js`.
+| `npm start` | Starts the server with Node (for production) |
 
 ## 🔐 Environment Variables
 
@@ -210,6 +206,7 @@ Legend: 🔓 public · 🔒 authentication required · 🔓/🔒 optional authen
 | GET | `/users/current-user` | 🔒 | Get the logged-in user |
 | PATCH | `/users/update-avatar` | 🔒 | Replace avatar image |
 | PATCH | `/users/update-cover-image` | 🔒 | Replace cover image |
+| DELETE | `/users/delete-account` | 🔒 | Delete account and all associated data (requires password confirmation) |
 | GET | `/users/c/:userName` | 🔒 | Get a channel profile |
 | GET | `/users/history` | 🔒 | Get watch history |
 | PATCH | `/users/history-clear` | 🔒 | Clear watch history |
@@ -342,6 +339,7 @@ erDiagram
 - **Rate limiting** — a global limiter, plus stricter limits on authentication and upload routes
 - **Password hashing** with bcrypt
 - **JWT** access/refresh tokens with configurable expiry
+- **Password-confirmed account deletion** — deleting an account requires re-entering the current password, and cascades through a database transaction so no orphaned data (videos, comments, likes, playlists, subscriptions, tweets) is left behind; associated Cloudinary files are cleaned up afterwards on a best-effort basis
 - **Request size limits** — JSON and form bodies are capped at 20 KB
 - **Configurable CORS** through `CORS_ORIGIN`
 - **Secrets stay out of the repo** — `.env` is git-ignored
@@ -357,6 +355,7 @@ erDiagram
 | `401 Unauthorized` on protected routes | Make sure the access token is sent (cookie or `Authorization: Bearer`) and hasn't expired. |
 | `429 Too Many Requests` | You hit a rate limit — wait a moment and retry. |
 | Upload fails | Check the Cloudinary keys in `.env` and that `public/temp` exists. |
+| `502 Bad Gateway` on a hosting platform | The app is running but the platform's proxy can't reach it. Check the target/listening port matches, and try a different deployment region if the issue persists. |
 
 ## 🗺️ Roadmap
 
@@ -388,9 +387,8 @@ For major changes, please open an issue first to discuss what you would like to 
 
 ## 📄 License
 
-Distributed under the **MIT License**. See the `LICENSE` file for more information.
+Distributed under the **ISC License**.
 
 ---
-
 
 If you found this project useful, consider giving it a ⭐ on GitHub!
