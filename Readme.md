@@ -141,7 +141,7 @@ If everything is configured correctly you should see the **"DB connected success
 Quick check:
 
 ```bash
-curl http://localhost:3000/api/v1/health
+curl https://videomate-production-5dc0.up.railway.app/api/v1/health
 ```
 
 ### Available scripts
@@ -177,7 +177,7 @@ Create a `.env` file in the project root (use `.env.example` as a template).
 
 Interactive documentation is served by the app through Swagger UI:
 
-**👉 http://localhost:3000/api/v1/docs**
+**👉 https://videomate-production-5dc0.up.railway.app/api/v1/docs/**
 
 You can explore every endpoint, see request/response schemas and try requests directly from the browser. For protected routes, click **Authorize** and paste your access token.
 
