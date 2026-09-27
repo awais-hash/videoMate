@@ -11,7 +11,7 @@
   "keywords": [
     "backend"
   ],
-  "author": "\"Ahmad Haral\"",
+  "author": "\"Awais Ahmad\"",
   "license": "ISC",
   "devDependencies": {
     "@types/swagger-jsdoc": "^6.0.4",

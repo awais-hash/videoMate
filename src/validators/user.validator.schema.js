@@ -7,7 +7,6 @@ const passwordSchema = z
   .regex(/[0-9]/, "Password must contain at least one number")
   .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character");
 
-
 const registerSchema = z.object({
   userName: z
     .string()
@@ -46,6 +45,7 @@ const updatePasswordSchema = z
     message: "New password must be different from the current password",
     path: ["newPassword"],
   });
+
 const updateUserDetailsSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters long").max(50).trim().optional(),
   email: z.email().trim().toLowerCase().optional(),
@@ -55,10 +55,15 @@ const channelProfileParamsSchema = z.object({
   userName: z.string().min(1, "Username is required").trim().toLowerCase(),
 });
 
-export{
-    registerSchema,
-    loginSchema,
-    updatePasswordSchema,
-    updateUserDetailsSchema,
-    channelProfileParamsSchema
-}
+const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Password is required to delete account"),
+});
+
+export {
+  registerSchema,
+  loginSchema,
+  updatePasswordSchema,
+  updateUserDetailsSchema,
+  channelProfileParamsSchema,
+  deleteAccountSchema,
+};

@@ -9,6 +9,7 @@ import {
   getCurrentUser,
   updateAvatar,
   updateCoverImage,
+  deleteAccount,
   channelProfile,
   getWatchHistory,
   clearWatchHistory,
@@ -23,6 +24,7 @@ import {
   updatePasswordSchema,
   updateUserDetailsSchema,
   channelProfileParamsSchema,
+  deleteAccountSchema,
 } from "../validators/user.validator.schema.js";
 
 const router = Router();
@@ -58,14 +60,14 @@ const router = Router();
  *         description: Too many requests (rate limit)
  */
 router.route("/register").post(
-    authLimiter,
-    uploadLimiter,
-    upload.fields([
-        { name: "avatar", maxCount: 1 },
-        { name: "coverImage", maxCount: 1 },
-    ]),
-    validate(registerSchema),
-    registerUser
+  authLimiter,
+  uploadLimiter,
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 },
+  ]),
+  validate(registerSchema),
+  registerUser
 );
 
 /**
@@ -153,9 +155,9 @@ router.route("/refresh-access-token").post(authLimiter, refreshAccessToken);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [oldPassword, newPassword]
+ *             required: [currentPassword, newPassword]
  *             properties:
- *               oldPassword: { type: string, format: password }
+ *               currentPassword: { type: string, format: password }
  *               newPassword: { type: string, format: password }
  *     responses:
  *       200:
@@ -214,7 +216,42 @@ router.route("/update-details").post(authMiddleware, validate(updateUserDetailsS
  */
 router.route("/current-user").get(authMiddleware, getCurrentUser);
 
-// router.route("/delete-account").delete(authMiddleware, deleteAccount);
+/**
+ * @swagger
+ * /users/delete-account:
+ *   delete:
+ *     summary: Permanently delete the current user's account and all associated data
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password]
+ *             properties:
+ *               password: { type: string, format: password, example: "Secret@123" }
+ *     responses:
+ *       200:
+ *         description: Account and all associated data deleted successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         description: Unauthorized or incorrect password
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       429:
+ *         description: Too many requests (rate limit)
+ */
+router.route("/delete-account").delete(
+  authLimiter,
+  authMiddleware,
+  validate(deleteAccountSchema),
+  deleteAccount
+);
 
 /**
  * @swagger
