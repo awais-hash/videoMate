@@ -26,7 +26,7 @@ const generateAccessAndRefreshToken = async (userId) => {
     }
 };
 
-const registerUser = asyncHandler(async (req, res, next) => {
+const registerUser = asyncHandler(async (req, res) => {
     const { userName, email, password, fullName } = req.body;
 
     if (!password?.trim() || !fullName?.trim()) {
@@ -148,7 +148,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
         );
 });
 
-const logoutUser = asyncHandler(async (req, res, next) => {
+const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { refreshToken: null }, { new: true });
 
     const options = {

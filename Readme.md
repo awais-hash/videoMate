@@ -360,11 +360,7 @@ erDiagram
 ## 🗺️ Roadmap
 
 - [ ] Automated tests (Jest + Supertest)
-- [ ] Dockerfile and `docker-compose` setup
-- [ ] CI pipeline with GitHub Actions
-- [ ] Redis caching for hot endpoints
-- [ ] Notifications and video view counters
-- [ ] Deployment guide
+- [ ] Admin routes with role-based access control
 
 ## 🤝 Contributing
 
