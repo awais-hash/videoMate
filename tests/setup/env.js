@@ -1,0 +1,11 @@
+process.env.NODE_ENV = "test";
+process.env.PORT = "3000";
+process.env.CORS_ORIGIN = "*";
+process.env.DATABASE_URI = "mongodb://127.0.0.1:27017/videomate-test";
+process.env.ACCESS_TOKEN_SECRET = "test-access-token-secret-do-not-use-in-production";
+process.env.ACCESS_TOKEN_EXPIRY = "1d";
+process.env.REFRESH_TOKEN_SECRET = "test-refresh-token-secret-do-not-use-in-production";
+process.env.REFRESH_TOKEN_EXPIRY = "10d";
+process.env.CLOUDINARY_CLOUD_NAME = "test-cloud";
+process.env.CLOUDINARY_API_KEY = "test-key";
+process.env.CLOUDINARY_API_SECRET = "test-secret";

@@ -148,7 +148,7 @@ const updateComment = asyncHandler(async (req, res) => {
         { new: true }
     );
 
-    return res.status(200).json(new ApiResponse(200, updateComment, "Comment updated successfully"))
+    return res.status(200).json(new ApiResponse(200, updatedComment, "Comment updated successfully"))
 
 
 })

@@ -405,20 +405,24 @@ const deleteAccount = asyncHandler(async (req, res) => {
 
     const cleanupJobs = [];
 
-    if (user.avatar?.public_id) {
-        cleanupJobs.push(deleteFromCloudinary(user.avatar.public_id, "image"));
+
+if (user.avatarPublicId) {
+    cleanupJobs.push(deleteFromCloudinary(user.avatarPublicId, "image"));
+}
+
+
+if (user.coverImagePublicId) {
+    cleanupJobs.push(deleteFromCloudinary(user.coverImagePublicId, "image"));
+}
+
+ownedVideos.forEach((video) => {
+    if (video.videoFilePublicId) {
+        cleanupJobs.push(deleteFromCloudinary(video.videoFilePublicId, "video"));
     }
-    if (user.coverImage?.public_id) {
-        cleanupJobs.push(deleteFromCloudinary(user.coverImage.public_id, "image"));
+    if (video.thumbnailPublicId) {
+        cleanupJobs.push(deleteFromCloudinary(video.thumbnailPublicId, "image"));
     }
-    ownedVideos.forEach((video) => {
-        if (video.videoFilePublicId) {
-            cleanupJobs.push(deleteFromCloudinary(video.videoFilePublicId, "video"));
-        }
-        if (video.thumbnailPublicId) {
-            cleanupJobs.push(deleteFromCloudinary(video.thumbnailPublicId, "image"));
-        }
-    });
+});
 
     const cleanupResults = await Promise.allSettled(cleanupJobs);
     cleanupResults.forEach((result) => {
