@@ -358,8 +358,6 @@ erDiagram
 | `502 Bad Gateway` on a hosting platform | The app is running but the platform's proxy can't reach it. Check the target/listening port matches, and try a different deployment region if the issue persists. |
 
 ## 🗺️ Roadmap
-
-- [ ] Automated tests (Jest + Supertest)
 - [ ] Admin routes with role-based access control
 
 ## 🤝 Contributing
