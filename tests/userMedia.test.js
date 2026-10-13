@@ -1,21 +1,21 @@
 import request from "supertest";
-import { jest } from '@jest/globals';
+import { jest } from "@jest/globals";
 import { connectTestDB, clearTestDB, disconnectTestDB } from "./setup/db.js";
 import { createTestUser } from "./helpers/createTestUser.js";
 
+const uploadToCloudinary = jest.fn().mockResolvedValue({
+  public_id: "mocked_id",
+  url: "http://example.com/mocked_image.png",
+  secure_url: "http://example.com/mocked_image.png",
+});
+const deleteFromCloudinary = jest.fn().mockResolvedValue(true);
 
 jest.unstable_mockModule("../src/utils/cloudinaryUpload.js", () => ({
-  uploadToCloudinary: jest.fn().mockResolvedValue({
-    public_id: "mocked_id",
-    url: "http://example.com/mocked_image.png",
-    secure_url: "http://example.com/mocked_image.png",
-  }),
-  deleteFromCloudinary: jest.fn().mockResolvedValue(true),
+  uploadToCloudinary,
+  deleteFromCloudinary,
 }));
 
-
 const { app } = await import("../src/app.js");
-const { uploadToCloudinary } = await import("../src/utils/cloudinaryUpload.js");
 
 const BASE_URL = "/api/v1/users";
 
