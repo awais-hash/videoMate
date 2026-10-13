@@ -9,7 +9,7 @@ const CURRENT_USER_URL = "/api/v1/users/current-user";
 let testUser;
 let testPassword;
 
-beforeAll(connectTestDB, 90000000);
+beforeAll(connectTestDB, 90000);
 afterAll(disconnectTestDB);
 
 beforeEach(async () => {
