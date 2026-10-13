@@ -29,3 +29,9 @@ jobs:
         ACCESS_TOKEN_EXPIRY: 1d
         REFRESH_TOKEN_SECRET: dummy-refresh-secret-for-testing
         REFRESH_TOKEN_EXPIRY: 10d
+        PORT: 8000
+        CORS_ORIGIN: "*"
+        MONGODB_URI: mongodb://127.0.0.1:27017/videomate_test
+        CLOUDINARY_CLOUD_NAME: dummy-cloud
+        CLOUDINARY_API_KEY: dummy-key
+        CLOUDINARY_API_SECRET: dummy-secret
