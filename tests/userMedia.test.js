@@ -1,8 +1,7 @@
 import request from "supertest";
-import { jest } from '@jest/globals';
+import { jest } from "@jest/globals";
 import { connectTestDB, clearTestDB, disconnectTestDB } from "./setup/db.js";
 import { createTestUser } from "./helpers/createTestUser.js";
-
 
 jest.unstable_mockModule("../src/utils/cloudinaryUpload.js", () => ({
   uploadToCloudinary: jest.fn().mockResolvedValue({
@@ -12,7 +11,6 @@ jest.unstable_mockModule("../src/utils/cloudinaryUpload.js", () => ({
   }),
   deleteFromCloudinary: jest.fn().mockResolvedValue(true),
 }));
-
 
 const { app } = await import("../src/app.js");
 const { uploadToCloudinary } = await import("../src/utils/cloudinaryUpload.js");
@@ -58,7 +56,9 @@ describe("User Media Endpoints", () => {
         .attach("avatar", dummyBuffer, "avatar.png");
 
       expect(res.status).toBe(200);
-      expect(res.body.data.avatar.url || res.body.data.avatar).toBe("http://example.com/mocked_image.png");
+      expect(res.body.data.avatar.url || res.body.data.avatar).toBe(
+        "http://example.com/mocked_image.png"
+      );
       expect(uploadToCloudinary).toHaveBeenCalled();
     });
   });
@@ -87,7 +87,9 @@ describe("User Media Endpoints", () => {
         .attach("coverImage", dummyBuffer, "cover.png");
 
       expect(res.status).toBe(200);
-      expect(res.body.data.coverImage.url || res.body.data.coverImage).toBe("http://example.com/mocked_image.png");
+      expect(res.body.data.coverImage.url || res.body.data.coverImage).toBe(
+        "http://example.com/mocked_image.png"
+      );
       expect(uploadToCloudinary).toHaveBeenCalled();
     });
   });
