@@ -24,3 +24,8 @@ jobs:
 
     - name: Run All Tests
       run: npm test
+      env:
+        ACCESS_TOKEN_SECRET: dummy-access-secret-for-testing
+        ACCESS_TOKEN_EXPIRY: 1d
+        REFRESH_TOKEN_SECRET: dummy-refresh-secret-for-testing
+        REFRESH_TOKEN_EXPIRY: 10d
