@@ -12,12 +12,15 @@ afterAll(disconnectTestDB);
 afterEach(clearTestDB);
 
 describe("Playlist Endpoints", () => {
-  let testUser, authHeader, testVideo, testPlaylist;
+  let testUser, authHeader, hackerHeader, testVideo, testPlaylist;
 
   beforeEach(async () => {
     const { user } = await createTestUser();
     testUser = user;
     authHeader = `Bearer ${user.generateAccessToken()}`;
+
+    const { user: hacker } = await createTestUser({ email: "hacker3@test.com", userName: "hacker3" });
+    hackerHeader = `Bearer ${hacker.generateAccessToken()}`;
 
     testVideo = await Video.create({
       title: "Playlist Video",
@@ -84,6 +87,14 @@ describe("Playlist Endpoints", () => {
       const updatedPlaylist = await Playlist.findById(testPlaylist._id);
       expect(updatedPlaylist.videos).toContainEqual(testVideo._id);
     });
+
+    it("returns 403 if another user tries to add a video to the playlist", async () => {
+      const res = await request(app)
+        .patch(`${BASE_URL}/add/${testVideo._id}/${testPlaylist._id}`)
+        .set("Authorization", hackerHeader);
+
+      expect(res.status).toBe(403);
+    });
   });
 
   describe(`PATCH ${BASE_URL}/remove/:videoId/:playlistId`, () => {
@@ -101,6 +112,14 @@ describe("Playlist Endpoints", () => {
       const updatedPlaylist = await Playlist.findById(testPlaylist._id);
       expect(updatedPlaylist.videos).not.toContainEqual(testVideo._id);
     });
+
+    it("returns 403 if another user tries to remove a video from the playlist", async () => {
+      const res = await request(app)
+        .patch(`${BASE_URL}/remove/${testVideo._id}/${testPlaylist._id}`)
+        .set("Authorization", hackerHeader);
+
+      expect(res.status).toBe(403);
+    });
   });
 
   describe(`PATCH ${BASE_URL}/:playlistId`, () => {
@@ -112,6 +131,15 @@ describe("Playlist Endpoints", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.data.name).toBe("Updated Name");
+    });
+
+    it("returns 403 if another user tries to update playlist details", async () => {
+      const res = await request(app)
+        .patch(`${BASE_URL}/${testPlaylist._id}`)
+        .set("Authorization", hackerHeader)
+        .send({ name: "Hacked Name" });
+
+      expect(res.status).toBe(403);
     });
   });
 
@@ -125,6 +153,14 @@ describe("Playlist Endpoints", () => {
 
       const deletedPlaylist = await Playlist.findById(testPlaylist._id);
       expect(deletedPlaylist).toBeNull();
+    });
+
+    it("returns 403 if another user tries to delete the playlist", async () => {
+      const res = await request(app)
+        .delete(`${BASE_URL}/${testPlaylist._id}`)
+        .set("Authorization", hackerHeader);
+
+      expect(res.status).toBe(403);
     });
   });
 });

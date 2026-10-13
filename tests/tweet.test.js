@@ -11,12 +11,15 @@ afterAll(disconnectTestDB);
 afterEach(clearTestDB);
 
 describe("Tweet Endpoints", () => {
-  let testUser, authHeader, testTweet;
+  let testUser, authHeader, hackerHeader, testTweet;
 
   beforeEach(async () => {
     const { user } = await createTestUser();
     testUser = user;
     authHeader = `Bearer ${user.generateAccessToken()}`;
+
+    const { user: hacker } = await createTestUser({ email: "hacker2@test.com", userName: "hacker2" });
+    hackerHeader = `Bearer ${hacker.generateAccessToken()}`;
 
     testTweet = await Tweet.create({
       content: "Original tweet content",
@@ -59,6 +62,15 @@ describe("Tweet Endpoints", () => {
       expect(res.status).toBe(200);
       expect(res.body.data.content).toBe("Updated tweet content");
     });
+
+    it("returns 403 if another user tries to update the tweet", async () => {
+      const res = await request(app)
+        .patch(`${BASE_URL}/${testTweet._id}`)
+        .set("Authorization", hackerHeader)
+        .send({ content: "Hacked tweet content" });
+
+      expect(res.status).toBe(403);
+    });
   });
 
   describe(`DELETE ${BASE_URL}/:tweetId`, () => {
@@ -71,6 +83,14 @@ describe("Tweet Endpoints", () => {
 
       const deletedTweet = await Tweet.findById(testTweet._id);
       expect(deletedTweet).toBeNull();
+    });
+
+    it("returns 403 if another user tries to delete the tweet", async () => {
+      const res = await request(app)
+        .delete(`${BASE_URL}/${testTweet._id}`)
+        .set("Authorization", hackerHeader);
+
+      expect(res.status).toBe(403);
     });
   });
 });

@@ -40,10 +40,10 @@ describe("User Profile Endpoints", () => {
     });
   });
 
-  describe(`POST ${BASE_URL}/update-details`, () => {
+  describe(`PATCH ${BASE_URL}/update-details`, () => {
     it("rejects unauthorized requests", async () => {
       const res = await request(app)
-        .post(`${BASE_URL}/update-details`)
+        .patch(`${BASE_URL}/update-details`)
         .send({ fullName: "New Name", email: "new@example.com" });
       
       expect(res.status).toBe(401);
@@ -51,7 +51,7 @@ describe("User Profile Endpoints", () => {
 
     it("updates user details successfully", async () => {
       const res = await request(app)
-        .post(`${BASE_URL}/update-details`)
+        .patch(`${BASE_URL}/update-details`)
         .set("Authorization", authHeader)
         .send({ fullName: "Updated Name", email: "updated@example.com" });
 
@@ -67,7 +67,7 @@ describe("User Profile Endpoints", () => {
       });
 
       const res = await request(app)
-        .post(`${BASE_URL}/update-details`)
+        .patch(`${BASE_URL}/update-details`)
         .set("Authorization", authHeader)
         .send({ fullName: "My Name", email: "conflict@example.com" });
 
@@ -75,10 +75,10 @@ describe("User Profile Endpoints", () => {
     });
   });
 
-  describe(`POST ${BASE_URL}/update-password`, () => {
+  describe(`PATCH ${BASE_URL}/update-password`, () => {
     it("rejects unauthorized requests", async () => {
       const res = await request(app)
-        .post(`${BASE_URL}/update-password`)
+        .patch(`${BASE_URL}/update-password`)
         .send({ currentPassword: "password123", newPassword: "newpassword123" });
       
       expect(res.status).toBe(401);
@@ -86,7 +86,7 @@ describe("User Profile Endpoints", () => {
 
     it("updates password successfully with correct current password", async () => {
       const res = await request(app)
-        .post(`${BASE_URL}/update-password`)
+        .patch(`${BASE_URL}/update-password`)
         .set("Authorization", authHeader)
         .send({ 
           currentPassword: currentPassword, 
@@ -99,7 +99,7 @@ describe("User Profile Endpoints", () => {
 
     it("fails to update password with incorrect current password", async () => {
       const res = await request(app)
-        .post(`${BASE_URL}/update-password`)
+        .patch(`${BASE_URL}/update-password`)
         .set("Authorization", authHeader)
         .send({ 
           currentPassword: "wrongPassword", 

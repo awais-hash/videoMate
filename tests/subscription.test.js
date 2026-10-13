@@ -28,10 +28,18 @@ describe("Subscription Endpoints", () => {
     channel = channelData.user;
   });
 
-  describe(`POST ${BASE_URL}/c/:channelId`, () => {
+  describe(`POST ${BASE_URL}/toggle/:channelId`, () => {
     it("rejects unauthorized requests", async () => {
-      const res = await request(app).post(`${BASE_URL}/c/${channel._id}`);
-      expect(res.status).toBe(404);
+      const res = await request(app).post(`${BASE_URL}/toggle/${channel._id}`);
+      expect(res.status).toBe(401);
+    });
+
+    it("rejects an invalid channel id", async () => {
+      const res = await request(app)
+        .post(`${BASE_URL}/toggle/not-a-valid-id`)
+        .set("Authorization", authHeader);
+
+      expect(res.status).toBe(400);
     });
 
     it("toggles subscription status correctly", async () => {

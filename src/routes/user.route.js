@@ -169,12 +169,12 @@ router.route("/refresh-access-token").post(authLimiter, refreshAccessToken);
  *       429:
  *         description: Too many requests (rate limit)
  */
-router.route("/update-password").post(authLimiter, authMiddleware, validate(updatePasswordSchema), updatePassword);
+router.route("/update-password").patch(authLimiter, authMiddleware, validate(updatePasswordSchema), updatePassword);
 
 /**
  * @swagger
  * /users/update-details:
- *   post:
+ *   patch:
  *     summary: Update the current user's account details
  *     tags: [Users]
  *     security:
@@ -197,7 +197,7 @@ router.route("/update-password").post(authLimiter, authMiddleware, validate(upda
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  */
-router.route("/update-details").post(authMiddleware, validate(updateUserDetailsSchema), updateUserDetails);
+router.route("/update-details").patch(authMiddleware, validate(updateUserDetailsSchema), updateUserDetails);
 
 /**
  * @swagger

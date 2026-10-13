@@ -40,8 +40,8 @@ const publishVideo = asyncHandler(async (req, res) => {
     }
 
     const createdVideo = await Video.create({
-        videoFile: videoFile.url,
-        thumbnail: thumbnail.url,
+        videoFile: videoFile.secure_url,
+        thumbnail: thumbnail.secure_url,
         videoFilePublicId: videoFile.public_id,
         thumbnailPublicId: thumbnail.public_id,
         owner: req.user._id,
@@ -132,7 +132,7 @@ const getVideoById = asyncHandler(async (req, res) => {
     );
 
    
-    video[0].views = updatedVideo.views;  // yeah sath likhna kaisy behtr hoo gaa ??? aur yeah kya aur kaisy kaam kr rha ha ??
+    video[0].views = updatedVideo.views; 
 
     if (req.user?._id) {
         await User.findByIdAndUpdate(
@@ -145,7 +145,7 @@ const getVideoById = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, video[0], "Video fetched successfully"));
 });
 
-// Get all videos
+
 const getAllVideos = asyncHandler(async (req, res) => {
 
     const {
@@ -216,7 +216,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, videos, "Videos fetched successfully"));
 });
 
-// Update video details
+
 const updateVideoDetails = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { title, description } = req.body;
@@ -244,7 +244,7 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
         if (!uploadedThumbnail?.url) {
             throw new ApiError(500, "Failed to upload new thumbnail");
         }
-        newThumbnailUrl = uploadedThumbnail.url;
+        newThumbnailUrl = uploadedThumbnail.secure_url;
         newThumbnailPublicId = uploadedThumbnail.public_id;
     }
 
