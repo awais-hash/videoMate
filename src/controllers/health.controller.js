@@ -1,4 +1,4 @@
-import mongoose, { disconnect } from "mongoose";
+import mongoose from "mongoose";
 
 
 const healthCheck = async (req,res)=>{

@@ -6,8 +6,7 @@ import {
   deleteComment,
 } from "../controllers/comment.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { addCommentSchema, updateCommentSchema,
-         getVideoCommentsQuerySchema } from "../validators/comments.validator.js";
+import { addCommentSchema, updateCommentSchema } from "../validators/comments.validator.js";
 import { mongoIdParamSchema } from "../validators/common.validator.js";
 import validate from "../middlewares/validate.middleware.js";
 

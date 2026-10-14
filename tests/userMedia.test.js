@@ -24,12 +24,11 @@ afterAll(disconnectTestDB);
 afterEach(clearTestDB);
 
 describe("User Media Endpoints", () => {
-  let testUser, authHeader;
+  let authHeader;
   const dummyBuffer = Buffer.from("dummy image content");
 
   beforeEach(async () => {
     const { user } = await createTestUser();
-    testUser = user;
     authHeader = `Bearer ${user.generateAccessToken()}`;
     jest.clearAllMocks();
   });

@@ -10,7 +10,7 @@ afterAll(disconnectTestDB);
 afterEach(clearTestDB);
 
 describe("User Profile Endpoints", () => {
-  let testUser, authHeader;
+  let  authHeader;
   const currentPassword = "password123";
 
   beforeEach(async () => {
@@ -19,7 +19,6 @@ describe("User Profile Endpoints", () => {
       email: "profile@example.com",
       password: currentPassword,
     });
-    testUser = user;
     authHeader = `Bearer ${user.generateAccessToken()}`;
   });
 

@@ -13,7 +13,7 @@ import {
 import { uploadLimiter } from "../middlewares/rateLimit.middleware.js";
 import validate from "../middlewares/validate.middleware.js";
 import { mongoIdParamSchema } from "../validators/common.validator.js";
-import { publishVideoSchema, publishVideoFilesSchema, updateVideoDetailsSchema, getAllVideosQuerySchema } from "../validators/video.validator.schema.js";
+import { publishVideoSchema, publishVideoFilesSchema, updateVideoDetailsSchema} from "../validators/video.validator.schema.js";
 
 const router = Router();
 

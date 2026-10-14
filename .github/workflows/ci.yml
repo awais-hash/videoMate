@@ -10,28 +10,31 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    steps:  
-    - name: Get Code from GitHub
-      uses: actions/checkout@v4
+    steps:
+      - name: Get Code from GitHub
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js Environment
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    - name: Install Project Packages
-      run: npm install
+      - name: Install Project Packages
+        run: npm install
 
-    - name: Run All Tests
-      run: npm test
-      env:
-        ACCESS_TOKEN_SECRET: dummy-access-secret-for-testing
-        ACCESS_TOKEN_EXPIRY: 1d
-        REFRESH_TOKEN_SECRET: dummy-refresh-secret-for-testing
-        REFRESH_TOKEN_EXPIRY: 10d
-        PORT: 8000
-        CORS_ORIGIN: "*"
-        MONGODB_URI: mongodb://127.0.0.1:27017/videomate_test
-        CLOUDINARY_CLOUD_NAME: dummy-cloud
-        CLOUDINARY_API_KEY: dummy-key
-        CLOUDINARY_API_SECRET: dummy-secret
+      - name: Run Linter (ESLint)
+        run: npm run lint
+
+      - name: Run All Tests
+        run: npm test
+        env:
+          ACCESS_TOKEN_SECRET: dummy-access-secret-for-testing
+          ACCESS_TOKEN_EXPIRY: 1d
+          REFRESH_TOKEN_SECRET: dummy-refresh-secret-for-testing
+          REFRESH_TOKEN_EXPIRY: 10d
+          PORT: 8000
+          CORS_ORIGIN: "*"
+          MONGODB_URI: mongodb://127.0.0.1:27017/videomate_test
+          CLOUDINARY_CLOUD_NAME: dummy-cloud
+          CLOUDINARY_API_KEY: dummy-key
+          CLOUDINARY_API_SECRET: dummy-secret
