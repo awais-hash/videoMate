@@ -3,17 +3,19 @@ import { jest } from "@jest/globals";
 import { connectTestDB, clearTestDB, disconnectTestDB } from "./setup/db.js";
 import { createTestUser } from "./helpers/createTestUser.js";
 
+const uploadToCloudinary = jest.fn().mockResolvedValue({
+  public_id: "mocked_id",
+  url: "http://example.com/mocked_image.png",
+  secure_url: "http://example.com/mocked_image.png",
+});
+const deleteFromCloudinary = jest.fn().mockResolvedValue(true);
+
 jest.unstable_mockModule("../src/utils/cloudinaryUpload.js", () => ({
-  uploadToCloudinary: jest.fn().mockResolvedValue({
-    public_id: "mocked_id",
-    url: "http://example.com/mocked_image.png",
-    secure_url: "http://example.com/mocked_image.png",
-  }),
-  deleteFromCloudinary: jest.fn().mockResolvedValue(true),
+  uploadToCloudinary,
+  deleteFromCloudinary,
 }));
 
 const { app } = await import("../src/app.js");
-const { uploadToCloudinary } = await import("../src/utils/cloudinaryUpload.js");
 
 const BASE_URL = "/api/v1/users";
 
@@ -39,6 +41,7 @@ describe("User Media Endpoints", () => {
         .attach("avatar", dummyBuffer, "avatar.png");
 
       expect(res.status).toBe(401);
+      expect(uploadToCloudinary).not.toHaveBeenCalled();
     });
 
     it("fails if avatar file is missing", async () => {
@@ -47,6 +50,7 @@ describe("User Media Endpoints", () => {
         .set("Authorization", authHeader);
 
       expect(res.status).toBe(400);
+      expect(uploadToCloudinary).not.toHaveBeenCalled();
     });
 
     it("updates avatar successfully", async () => {
@@ -59,7 +63,7 @@ describe("User Media Endpoints", () => {
       expect(res.body.data.avatar.url || res.body.data.avatar).toBe(
         "http://example.com/mocked_image.png"
       );
-      expect(uploadToCloudinary).toHaveBeenCalled();
+      expect(uploadToCloudinary).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -70,6 +74,7 @@ describe("User Media Endpoints", () => {
         .attach("coverImage", dummyBuffer, "cover.png");
 
       expect(res.status).toBe(401);
+      expect(uploadToCloudinary).not.toHaveBeenCalled();
     });
 
     it("fails if cover image file is missing", async () => {
@@ -78,6 +83,7 @@ describe("User Media Endpoints", () => {
         .set("Authorization", authHeader);
 
       expect(res.status).toBe(400);
+      expect(uploadToCloudinary).not.toHaveBeenCalled();
     });
 
     it("updates cover image successfully", async () => {
@@ -90,7 +96,7 @@ describe("User Media Endpoints", () => {
       expect(res.body.data.coverImage.url || res.body.data.coverImage).toBe(
         "http://example.com/mocked_image.png"
       );
-      expect(uploadToCloudinary).toHaveBeenCalled();
+      expect(uploadToCloudinary).toHaveBeenCalledTimes(1);
     });
   });
 });

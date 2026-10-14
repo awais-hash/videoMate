@@ -1,107 +1,95 @@
-import mongoose,{Schema} from 'mongoose';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const userSchema = new Schema({
-
-    userName:{
-        type:String,
-        required:true,
-        unique:true,
-        index:true,
-         lowercase: true,
-        trim: true, 
+const userSchema = new Schema(
+    {
+        userName: {
+            type: String,
+            required: true,
+            unique: true,
+            index: true,
+            lowercase: true,
+            trim: true,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+        },
+        fullName: {
+            type: String,
+            required: true,
+            trim: true,
+            index: true,
+        },
+        // Single source of truth for images: { url, public_id }
+        avatar: {
+            url: { type: String, default: "" },
+            public_id: { type: String, default: "" },
+        },
+        coverImage: {
+            url: { type: String, default: "" },
+            public_id: { type: String, default: "" },
+        },
+        password: {
+            type: String,
+            required: [true, "Password is required"],
+        },
+        watchHistory: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Video",
+            },
+        ],
+        refreshToken: {
+            type: String,
+        },
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
-        lowercase: true,
-        trim: true, 
-    },
-    fullName:{
-        type:String,
-        required:true,
-       trim: true,
-        index:true,
-    },
-     avatar: {
-        url: { type: String, default: "" },
-        public_id: { type: String, default: "" }
-    },
-    coverImage: {
-        url: { type: String, default: "" },
-        public_id: { type: String, default: "" }
-    },
-    avatarPublicId:{
-        type:String, 
-        required:true
-    },
-    coverImagePublicId:{
-        type:String, 
-        required:false
-    },
-
-     password:{
-        type:String, 
-        required:[true,'Password is required'],
-    },
-    watchHistory:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:'Video'
-        }
-    ],
-    refreshToken:{
-        type:String
+    {
+        timestamps: true,
+        toJSON: {
+            // Never leak sensitive fields, even if a controller forgets .select()
+            transform(doc, ret) {
+                delete ret.password;
+                delete ret.refreshToken;
+                delete ret.__v;
+                return ret;
+            },
+        },
     }
-},
-{
-    timestamps:true
+);
+
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
+    this.password = await bcrypt.hash(this.password, 10);
 });
 
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
 
-userSchema.pre('save', async function(next){
-
-    if (!this.isModified('password')) {
-        return
-    }
-    this.password = await bcrypt.hash(this.password,10);
-
-})
-
-
-
-userSchema.methods.isPasswordCorrect = async function(password){
-
-    return await bcrypt.compare(password,this.password);
-
-}
-
-userSchema.methods.generateAccessToken = function(){
-
-    return jwt.sign({
-        id:this._id,
-        userName:this.userName,
-        email:this.email,
-        fullName:this.fullName,
-
-    },
+userSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
+        {
+            id: this._id,
+            userName: this.userName,
+            email: this.email,
+            fullName: this.fullName,
+        },
         process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+    );
+};
 
-        });
-}
-userSchema.methods.generateRefreshToken = function(){
-
- return jwt.sign({
-        id:this._id
-
-    },
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        { id: this._id },
         process.env.REFRESH_TOKEN_SECRET,
-        {expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+    );
+};
 
-        });
-}
-
-export const User = mongoose.model('User',userSchema);
+export const User = mongoose.model("User", userSchema);

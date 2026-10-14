@@ -7,9 +7,14 @@ export const createTestUser = async (overrides = {}) => {
     userName: "testuser",
     email: "testuser@example.com",
     fullName: "Test User",
-    avatar: "https://example.com/avatar.png",
-    avatarPublicId: "test-avatar", 
-    coverImage: "https://example.com/cover.png",
+    avatar: {
+      url: "https://example.com/avatar.png",
+      public_id: "test-avatar",
+    },
+    coverImage: {
+      url: "https://example.com/cover.png",
+      public_id: "",
+    },
     ...overrides,
     password,
   });
