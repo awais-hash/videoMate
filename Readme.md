@@ -1,14 +1,17 @@
 # 🎬 VideoMate API
 
-**A production-style REST API for a video-sharing platform with social features — built with Node.js, Express 5 and MongoDB.**
+**A production-ready, containerized REST API for a video-sharing platform with social features — built with Node.js 24, Express 5, and MongoDB.**
 
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![CI Pipeline](https://github.com/awais-hash/videoMate/actions/workflows/ci.yml/badge.svg)](https://github.com/awais-hash/videoMate/actions)
+[![Node.js](https://img.shields.io/badge/Node.js-24%20LTS-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose%209-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](#-docker--deployment)
+[![Tests](https://img.shields.io/badge/Tests-75%20Passing-brightgreen?logo=jest&logoColor=white)](#-testing--ci-pipeline)
 [![Swagger](https://img.shields.io/badge/API%20Docs-Swagger%20UI-85EA2D?logo=swagger&logoColor=black)](#-api-documentation)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#-license)
 
-[API Docs](#-api-documentation) · [Getting Started](#-getting-started) · [Endpoints](#-api-endpoints) · [Contributing](#-contributing)
+[API Docs](#-api-documentation) · [Getting Started](#-getting-started) · [Testing & CI](#-testing--ci-pipeline) · [Docker](#-docker--deployment) · [Endpoints](#%EF%B8%8F-api-endpoints) · [Contributing](#-contributing)
 
 ---
 
@@ -19,15 +22,17 @@
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
+- [Testing & CI Pipeline](#-testing--ci-pipeline)
+- [Docker & Deployment](#-docker--deployment)
 - [Environment Variables](#-environment-variables)
 - [API Documentation](#-api-documentation)
-- [API Endpoints](#-api-endpoints)
+- [API Endpoints](#%EF%B8%8F-api-endpoints)
 - [Authentication](#-authentication)
 - [Response & Error Format](#-response--error-format)
-- [Data Model](#-data-model)
-- [Security](#-security)
+- [Data Model](#%EF%B8%8F-data-model)
+- [Security](#%EF%B8%8F-security)
 - [Troubleshooting](#-troubleshooting)
-- [Roadmap](#-roadmap)
+- [Roadmap](#%EF%B8%8F-roadmap)
 - [Contributing](#-contributing)
 - [Author](#-author)
 - [License](#-license)
@@ -36,75 +41,92 @@
 
 ## 🔍 Overview
 
-VideoMate is a backend service that combines the core of a video platform (upload, publish, watch history) with social features (comments, likes, playlists, subscriptions and short text posts called *tweets*).
+VideoMate is a backend service that combines the core of a video platform (upload, publish, watch history) with social features (comments, likes, playlists, subscriptions, and short text posts called *tweets*).
 
-It focuses on clean architecture and safe defaults: every request is validated with **Zod**, protected routes use **JWT authentication**, uploads are streamed to **Cloudinary**, and the whole API is documented with **Swagger (OpenAPI)**.
+It focuses on clean architecture, reliability, and production standards:
+
+- Every request is validated with **Zod**.
+- Protected routes use **JWT authentication**.
+- Uploads are streamed to **Cloudinary**.
+- Quality is enforced through **ESLint** and **75 automated Jest/Supertest integration tests** running in a **GitHub Actions CI pipeline**.
+- The application is containerized with **Docker** and documented with **Swagger (OpenAPI)**.
 
 ## ✨ Features
 
-- **Authentication & Authorization** — register, login, logout, JWT access + refresh tokens, password change
-- **User profiles** — avatar and cover image upload, channel profile pages, watch history
-- **Account deletion** — password-confirmed account deletion with transactional cascade cleanup of all related data (videos, comments, likes, playlists, subscriptions, tweets) and Cloudinary asset cleanup
-- **Videos** — upload video + thumbnail, publish/unpublish, edit, delete, list with pagination
-- **Comments** — add, edit, delete and paginate comments on videos
-- **Likes** — toggle likes on videos, comments and tweets; list liked videos
-- **Playlists** — create, update, delete, add and remove videos
-- **Subscriptions** — subscribe/unsubscribe to channels, list subscribers and subscribed channels
-- **Tweets** — short community posts per user
-- **Request validation** — Zod schemas for body, params, query and uploaded files
-- **Rate limiting** — global limiter plus stricter limiters for auth and upload routes
-- **Centralised error handling** — consistent JSON errors and a 404 fallback
-- **Interactive API docs** — Swagger UI served by the app itself
-- **Health check** endpoint for uptime monitoring
+- **Authentication & Authorization** — Register, login, logout, JWT access + refresh tokens, password change.
+- **User Profiles** — Avatar and cover image upload, channel profile pages, and watch history tracking.
+- **Account Deletion** — Password-confirmed deletion with transactional cascade cleanup of all related records (videos, comments, likes, playlists, subscriptions, tweets) and best-effort Cloudinary asset cleanup.
+- **Videos** — Upload video and thumbnail, publish/unpublish toggle, edit, delete, and list with pagination, search, and sorting.
+- **Comments** — Add, edit, delete, and paginate comments on videos.
+- **Likes** — Toggle likes on videos, comments, and tweets; list liked videos.
+- **Playlists** — Create, update, delete, add, and remove videos.
+- **Subscriptions** — Subscribe/unsubscribe to channels, list subscribers and subscribed channels.
+- **Tweets** — Short community posts per user.
+- **Request Validation** — Strict Zod schemas for body, params, query, and uploaded files.
+- **Rate Limiting** — Global rate limiter plus stricter limiters for authentication and upload routes.
+- **Centralized Error Handling** — Consistent JSON error payloads and a robust 404 fallback.
+- **Automated Testing & CI** — 12 test suites (75 tests) built with Jest, Supertest, and `mongodb-memory-server`, verified on every push via GitHub Actions.
+- **Dockerized Production** — Lightweight `node:24-alpine` image deployed on Railway with automated health checks.
+- **Interactive API Documentation** — Swagger UI served directly by the application.
+- **Health Check** — Uptime monitoring endpoint.
 
 ## 🧰 Tech Stack
 
 | Layer | Technology |
 | --- | --- |
-| Runtime | Node.js (ES Modules) |
+| Runtime | Node.js 24 LTS (ES Modules) |
 | Framework | Express 5 |
 | Database | MongoDB with Mongoose 9 |
 | Pagination | `mongoose-aggregate-paginate-v2` |
-| Auth | JSON Web Tokens (`jsonwebtoken`), `bcrypt` |
+| Authentication | JSON Web Tokens (`jsonwebtoken`), `bcrypt` |
 | Validation | Zod |
-| File uploads | Multer (temp storage) → Cloudinary |
-| Security / Ops | `cors`, `cookie-parser`, `express-rate-limit` |
-| API docs | `swagger-jsdoc`, `swagger-ui-express` |
-| Tooling | Nodemon, Prettier |
+| File Uploads | Multer (temporary storage) → Cloudinary |
+| Security & Ops | `cors`, `cookie-parser`, `express-rate-limit` |
+| Testing | Jest, Supertest, `mongodb-memory-server` |
+| Code Quality | ESLint (Flat Config), Prettier |
+| DevOps & CI/CD | GitHub Actions, Docker (`node:24-alpine`), Railway |
+| API Documentation | `swagger-jsdoc`, `swagger-ui-express` |
 
 ## 📁 Project Structure
 
 ```text
 videoMate
+├── .github/
+│   └── workflows/
+│       └── ci.yml                      # GitHub Actions CI pipeline (ESLint + Jest)
 ├── public/
-│   └── temp/                  # Temporary storage for uploads before Cloudinary
+│   └── temp/                           # Temporary storage for uploads before Cloudinary
 ├── src/
 │   ├── config/
-│   │   ├── cors.config.js     # CORS options
-│   │   └── swagger.config.js  # OpenAPI / Swagger setup
-│   ├── controllers/           # Request handlers (business logic)
+│   │   ├── cors.config.js              # CORS configuration
+│   │   └── swagger.config.js           # OpenAPI / Swagger setup
+│   ├── controllers/                    # Request handlers and business logic
 │   ├── db/
-│   │   └── index.js           # MongoDB connection
+│   │   └── index.js                    # MongoDB connection handler
 │   ├── middlewares/
-│   │   ├── auth.middleware.js         # JWT verification
-│   │   ├── optionalAuth.middleware.js # Auth that doesn't block guests
-│   │   ├── errorHandler.middleware.js # Global error handler
-│   │   ├── multer.middleware.js       # File upload handling
-│   │   ├── rateLimit.middleware.js    # General / auth / upload limiters
-│   │   └── validate.middleware.js     # Zod validation wrapper
-│   ├── models/                # Mongoose schemas
-│   ├── routes/                # Route definitions + Swagger annotations
+│   │   ├── auth.middleware.js          # JWT verification
+│   │   ├── optionalAuth.middleware.js  # Optional auth that doesn't block guests
+│   │   ├── errorHandler.middleware.js  # Global error handler
+│   │   ├── multer.middleware.js        # File upload configuration
+│   │   ├── rateLimit.middleware.js     # General / auth / upload limiters
+│   │   └── validate.middleware.js      # Zod validation wrapper
+│   ├── models/                         # Mongoose schemas and models
+│   ├── routes/                         # Route definitions and Swagger annotations
 │   ├── utils/
 │   │   ├── ApiError.js
 │   │   ├── ApiResponse.js
 │   │   ├── asyncHandler.js
 │   │   └── cloudinaryUpload.js
-│   ├── validators/            # Zod schemas
-│   ├── app.js                 # Express app, middleware and route mounting
+│   ├── validators/                     # Zod validation schemas
+│   ├── app.js                          # Express app, middleware, and route mounting
 │   ├── constants.js
-│   └── index.js               # Entry point (DB connect + server start)
-├── .env                       # Local environment variables (never commit)
-├── .env.example               # Template for environment variables
+│   └── index.js                        # Entry point (DB connect + server start)
+├── tests/                              # Jest + Supertest integration test suites
+├── .dockerignore                       # Files excluded from the Docker build context
+├── .env                                # Local environment variables (never commit)
+├── .env.example                        # Template for environment variables
+├── Dockerfile                          # Production container definition (node:24-alpine)
+├── eslint.config.js                    # ESLint configuration
 └── package.json
 ```
 
@@ -112,7 +134,7 @@ videoMate
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) **v18 or newer** (v20 LTS recommended)
+- [Node.js](https://nodejs.org/) **v24 LTS** (recommended)
 - A [MongoDB](https://www.mongodb.com/) database — local or [MongoDB Atlas](https://www.mongodb.com/atlas)
 - A free [Cloudinary](https://cloudinary.com/) account for media storage
 
@@ -129,28 +151,60 @@ npm install
 # 3. Create your environment file and fill in the values
 cp .env.example .env
 
-# 4. Start the development server (with auto-reload)
+# 4. Start the development server with auto-reload
 npm run dev
 ```
 
-If everything is configured correctly you should see the **"DB connected successfully"** and **"server is running"** messages in your terminal.
+If everything is configured correctly, you should see the **"DB connected successfully"** and **"server is running"** messages in your terminal.
 
-Quick check:
+Quick check against the live deployment:
 
 ```bash
 curl https://videomate-production-5dc0.up.railway.app/api/v1/health
 ```
 
-### Available scripts
+### Available Scripts
 
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Starts the server with Nodemon and loads `.env` |
-| `npm start` | Starts the server with Node (for production) |
+| `npm run dev` | Starts the server with Nodemon (development, loads `.env`) |
+| `npm start` | Starts the server with Node (production) |
+| `npm test` | Runs the full Jest suite with an in-memory MongoDB |
+| `npm run lint` | Runs ESLint to check code quality |
+
+## 🧪 Testing & CI Pipeline
+
+VideoMate uses **Jest**, **Supertest**, and **`mongodb-memory-server`** to run isolated integration tests without touching external databases or services.
+
+- **Test Coverage:** 12 test suites covering authentication, user profiles, media uploads, account deletion, videos, comments, likes, playlists, subscriptions, tweets, and health checks.
+- **Continuous Integration:** Every push and pull request to the `main` branch triggers the GitHub Actions workflow (`.github/workflows/ci.yml`), which sets up Node.js 24, runs **ESLint**, and executes all integration tests.
+
+```bash
+npm test        # run all tests
+npm run lint    # lint the codebase
+```
+
+## 🐳 Docker & Deployment
+
+The project ships with a production-optimized **`Dockerfile`** based on `node:24-alpine` (~79 MB image) and a `.dockerignore` to keep the build context lightweight.
+
+### Local Container Build
+
+```bash
+# Build the image
+docker build -t videomate-api .
+
+# Run the container
+docker run -p 3000:3000 --env-file .env videomate-api
+```
+
+### Cloud Deployment
+
+The live application is hosted on **Railway**, using the repository's `Dockerfile` with automated container health checks against `/api/v1/health`.
 
 ## 🔐 Environment Variables
 
-Create a `.env` file in the project root (use `.env.example` as a template).
+Create a `.env` file in the project root, using `.env.example` as a template.
 
 | Variable | Description | Example |
 | --- | --- | --- |
@@ -162,9 +216,9 @@ Create a `.env` file in the project root (use `.env.example` as a template).
 | `ACCESS_TOKEN_EXPIRY` | Access token lifetime | `1d` |
 | `REFRESH_TOKEN_SECRET` | Secret used to sign refresh tokens | *long random string* |
 | `REFRESH_TOKEN_EXPIRY` | Refresh token lifetime | `10d` |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | `my-cloud` |
-| `CLOUDINARY_API_KEY` | Cloudinary API key | — |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret | — |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | `your-cloud-name` |
+| `CLOUDINARY_API_KEY` | Cloudinary API key | `your-api-key` |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret | `your-api-secret` |
 
 > ⚠️ **Never commit your `.env` file.** Generate strong secrets with:
 > `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
@@ -175,15 +229,15 @@ Interactive documentation is served by the app through Swagger UI:
 
 **👉 https://videomate-production-5dc0.up.railway.app/api/v1/docs/**
 
-You can explore every endpoint, see request/response schemas and try requests directly from the browser. For protected routes, click **Authorize** and paste your access token.
+Explore every endpoint, inspect request/response schemas, and try requests directly from the browser. For protected routes, click **Authorize** and paste your access token.
 
 <!-- Add a screenshot of your Swagger UI here:
 ![Swagger UI](docs/swagger-ui.png)
 -->
 
-All endpoints are prefixed with **`/api/v1`**.
-
 ## 🛣️ API Endpoints
+
+All endpoints are prefixed with **`/api/v1`**.
 
 Legend: 🔓 public · 🔒 authentication required · 🔓/🔒 optional authentication
 
@@ -273,7 +327,7 @@ Legend: 🔓 public · 🔒 authentication required · 🔓/🔒 optional authen
 
 VideoMate uses a **JWT access token + refresh token** flow.
 
-1. **Log in** with `POST /api/v1/users/login`. The API issues an access token (short-lived) and a refresh token (long-lived).
+1. **Log in** with `POST /api/v1/users/login`. The API issues a short-lived access token and a long-lived refresh token.
 2. Send the access token with every protected request, either as an HTTP cookie or in the header:
 
    ```http
@@ -335,14 +389,14 @@ erDiagram
 
 ## 🛡️ Security
 
-- **Input validation** on body, params, query and files using Zod
+- **Input validation** on body, params, query, and files using Zod
 - **Rate limiting** — a global limiter, plus stricter limits on authentication and upload routes
 - **Password hashing** with bcrypt
 - **JWT** access/refresh tokens with configurable expiry
-- **Password-confirmed account deletion** — deleting an account requires re-entering the current password, and cascades through a database transaction so no orphaned data (videos, comments, likes, playlists, subscriptions, tweets) is left behind; associated Cloudinary files are cleaned up afterwards on a best-effort basis
+- **Password-confirmed account deletion** — requires re-entering the current password and cascades through a database transaction so no orphaned data is left behind; associated Cloudinary files are cleaned up afterwards on a best-effort basis
 - **Request size limits** — JSON and form bodies are capped at 20 KB
 - **Configurable CORS** through `CORS_ORIGIN`
-- **Secrets stay out of the repo** — `.env` is git-ignored
+- **Secrets stay out of the repo** — `.env` is excluded via `.gitignore` and `.dockerignore`
 
 > 🔒 **Production tip:** never leave `CORS_ORIGIN=*` in production. Set it to your real frontend origin(s).
 
@@ -355,10 +409,16 @@ erDiagram
 | `401 Unauthorized` on protected routes | Make sure the access token is sent (cookie or `Authorization: Bearer`) and hasn't expired. |
 | `429 Too Many Requests` | You hit a rate limit — wait a moment and retry. |
 | Upload fails | Check the Cloudinary keys in `.env` and that `public/temp` exists. |
-| `502 Bad Gateway` on a hosting platform | The app is running but the platform's proxy can't reach it. Check the target/listening port matches, and try a different deployment region if the issue persists. |
+| `502 Bad Gateway` on a hosting platform | The app is running but the platform's proxy can't reach it. Check that the target/listening port matches, and try a different deployment region if the issue persists. |
 
 ## 🗺️ Roadmap
-- [ ] Admin routes with role-based access control
+
+- [x] Interactive OpenAPI / Swagger UI documentation
+- [x] Automated integration test suite (75 tests with Jest & Supertest)
+- [x] GitHub Actions CI pipeline with ESLint & automated testing
+- [x] Docker containerization (`node:24-alpine`) & Railway deployment
+- [ ] Admin routes with Role-Based Access Control (RBAC)
+- [ ] Frontend integration with React / Next.js
 
 ## 🤝 Contributing
 
@@ -367,8 +427,9 @@ Contributions are welcome!
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Commit your changes: `git commit -m "feat: add my feature"`
-4. Push the branch: `git push origin feature/my-feature`
-5. Open a Pull Request
+4. Make sure `npm run lint` and `npm test` pass
+5. Push the branch: `git push origin feature/my-feature`
+6. Open a Pull Request
 
 For major changes, please open an issue first to discuss what you would like to change.
 
