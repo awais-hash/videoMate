@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install Project Packages
         run: npm install
@@ -32,7 +32,7 @@ jobs:
           ACCESS_TOKEN_EXPIRY: 1d
           REFRESH_TOKEN_SECRET: dummy-refresh-secret-for-testing
           REFRESH_TOKEN_EXPIRY: 10d
-          PORT: 8000
+          PORT: 3000
           CORS_ORIGIN: "*"
           MONGODB_URI: mongodb://127.0.0.1:27017/videomate_test
           CLOUDINARY_CLOUD_NAME: dummy-cloud
